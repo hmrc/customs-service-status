@@ -3,7 +3,7 @@ import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.{integrationTestSettings, scalaSettings}
 import sbt.Keys.evictionErrorLevel
 
-lazy val microservice = Project("custom-service-status", file("."))
+lazy val microservice = Project("customs-service-status", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
