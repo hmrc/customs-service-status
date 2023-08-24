@@ -1,5 +1,5 @@
 
-# custom-service-status
+# customs-service-status
 
 This is a placeholder README.md for a new repository
 
