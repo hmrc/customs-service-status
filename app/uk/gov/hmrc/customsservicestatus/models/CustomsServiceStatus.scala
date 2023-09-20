@@ -79,4 +79,3 @@ object CustomsServiceStatusWithDesc {
 object Services {
   implicit val format = Json.format[Services]
 }
-
