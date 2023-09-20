@@ -20,17 +20,14 @@ import cats.data.EitherT
 import cats.implicits._
 import play.api.Logger
 import pureconfig.ConfigSource
-import uk.gov.hmrc.customsservicestatus.config.AppConfig
-
-import javax.inject.Inject
-import pureconfig._
 import pureconfig.generic.auto._
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
-import uk.gov.hmrc.customsservicestatus.models.{Services, db}
+import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.models.db.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
+import uk.gov.hmrc.customsservicestatus.models.{Services, db}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckService @Inject()(customsServiceStatusRepository: CustomsServiceStatusRepository)(implicit val executionContext: ExecutionContext) {

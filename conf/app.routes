@@ -1,5 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.customsservicestatus.controllers.MicroserviceHelloWorldController.hello
 PUT        /services/:service/status                    uk.gov.hmrc.customsservicestatus.controllers.ServiceController.check(service)
 GET        /services                                uk.gov.hmrc.customsservicestatus.controllers.ServiceController.list()
