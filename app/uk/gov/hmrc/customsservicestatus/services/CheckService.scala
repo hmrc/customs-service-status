@@ -23,8 +23,9 @@ import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
-import uk.gov.hmrc.customsservicestatus.models.db.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
-import uk.gov.hmrc.customsservicestatus.models.{Services, db}
+import uk.gov.hmrc.customsservicestatus.models
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
+import uk.gov.hmrc.customsservicestatus.models.config.Services
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import javax.inject.Inject
@@ -35,7 +36,7 @@ class CheckService @Inject()(customsServiceStatusRepository: CustomsServiceStatu
   implicit val logger: Logger = Logger(this.getClass.getName)
 
   def check(service: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
-    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[uk.gov.hmrc.customsservicestatus.models.Services]
+    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
     if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(service)))
       EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.check(service))
     else {
@@ -44,11 +45,11 @@ class CheckService @Inject()(customsServiceStatusRepository: CustomsServiceStatu
     }
   }
 
-  def listAll: Future[db.Services] = {
-    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[uk.gov.hmrc.customsservicestatus.models.Services]
+  def listAll: Future[models.Services] = {
+    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
     customsServiceStatusRepository.findAll() map { services =>
       val serviceNames = servicesFromConfig.services.map(_.name)
-      uk.gov.hmrc.customsservicestatus.models.db.Services(services.filter(s => serviceNames.contains(s.name)) map (CustomsServiceStatusWithDesc(_)))
+      models.Services(services.filter(s => serviceNames.contains(s.name)) map (CustomsServiceStatusWithDesc(_)))
     }
   }
 }

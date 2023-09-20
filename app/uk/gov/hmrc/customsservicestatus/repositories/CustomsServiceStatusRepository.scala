@@ -24,7 +24,7 @@ import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
 import uk.gov.hmrc.customsservicestatus.config.AppConfig
-import uk.gov.hmrc.customsservicestatus.models.db.CustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.customsservicestatus.utils.Now.InstantNow
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._

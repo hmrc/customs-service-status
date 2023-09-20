@@ -19,7 +19,7 @@ package uk.gov.hmrc.customsservicestatus.controllers.services
 import org.mockito.Mockito.when
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
-import uk.gov.hmrc.customsservicestatus.models.db.{CustomsServiceStatus, Status}
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, Status}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.services.CheckService
 

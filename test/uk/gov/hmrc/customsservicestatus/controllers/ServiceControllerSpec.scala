@@ -24,8 +24,7 @@ import play.api.test.Helpers.{contentAsJson, status, stubControllerComponents}
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
 import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
-import uk.gov.hmrc.customsservicestatus.models.State
-import uk.gov.hmrc.customsservicestatus.models.db.{CustomsServiceStatus, Status}
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State, Status}
 import uk.gov.hmrc.customsservicestatus.services.CheckService
 
 import java.time.Instant

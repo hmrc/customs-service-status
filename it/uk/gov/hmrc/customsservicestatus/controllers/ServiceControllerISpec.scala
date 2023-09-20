@@ -20,7 +20,7 @@ import play.api.{Application, Mode}
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.models.Services
+import uk.gov.hmrc.customsservicestatus.models.config.Services
 
 class ServiceControllerISpec extends BaseISpec {
 

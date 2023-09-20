@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus.models
+package uk.gov.hmrc.customsservicestatus.models.config
 
 import play.api.libs.json.{Json, OFormat}
 
