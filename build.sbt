@@ -24,6 +24,5 @@ lazy val microservice = Project("customs-service-status", file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(CodeCoverageSettings.settings: _*)
 
 evictionErrorLevel := Level.Warn

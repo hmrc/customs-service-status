@@ -25,12 +25,12 @@ import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
 import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
-import uk.gov.hmrc.customsservicestatus.utils.Now.InstantNow
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import uk.gov.hmrc.play.http.logging.Mdc
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -62,7 +62,7 @@ class CustomsServiceStatusRepository @Inject()(
           ),
           update = combine(
             set("status.state", "OK".toBson()),
-            set("status.lastUpdated", BsonDateTime(InstantNow().toEpochMilli))
+            set("status.lastUpdated", BsonDateTime(Instant.now.toEpochMilli))
           ),
           options = FindOneAndUpdateOptions()
             .returnDocument(ReturnDocument.AFTER)

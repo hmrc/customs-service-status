@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.{Application, Mode}
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.FakeRequest
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.config.Services
@@ -32,17 +33,19 @@ class ServiceControllerISpec extends BaseISpec {
   }
 
   "GET /services" should {
+    "return Ok with empty list if there are services configured, but no corresponding entries in the db" in {
 
-    "return Ok with empty list if no services are configured" in {
-      def fakeApplication(): Application =
-        GuiceApplicationBuilder()
-          .disable[com.kenshoo.play.metrics.PlayModule]
-          .configure("services" -> "[]")
-          .in(Mode.Test)
-          .build()
       val result = callRoute(fakeRequest(routes.ServiceController.list()))
       status(result)                                   shouldBe (OK)
       contentAsJson(result).as[Services].services.size shouldBe (0)
+    }
+
+    "return Ok with one service in the response if it is configured and have a corresponding entry in the db" in {
+      val insertEntry = callRoute(fakeRequest(routes.ServiceController.check("haulier")).withMethod("PUT"))
+      status(insertEntry) shouldBe (OK)
+      val result = callRoute(fakeRequest(routes.ServiceController.list()))
+      status(result)                                   shouldBe (OK)
+      contentAsJson(result).as[Services].services.size shouldBe (1)
     }
 
   }

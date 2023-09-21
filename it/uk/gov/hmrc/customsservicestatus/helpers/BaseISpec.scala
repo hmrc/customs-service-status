@@ -58,7 +58,6 @@ abstract class BaseISpec
     with HttpProtocol
     with HttpVerbs
     with ResultExtractors
-    with WireMockHelper
     with AdditionalAppConfig {
 
   implicit lazy val system:       ActorSystem      = ActorSystem()

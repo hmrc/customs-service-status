@@ -27,13 +27,4 @@ abstract class BaseCustomsServiceStatusController(cc: ControllerComponents)(impl
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
-  def validateJson[T](f: T => Future[Result])(implicit request: Request[JsValue], r: Reads[T]): Future[Result] =
-    request.body.validate[T] match {
-      case JsSuccess(t, _) => f(t)
-      case error @ JsError(errors) =>
-        logger.warn(
-          s"""|Failed to validate JSON from request body: ${error.toLogFormat}""".stripMargin
-        )
-        Future(BadRequest(s"$errors"))
-    }
 }

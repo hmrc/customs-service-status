@@ -21,6 +21,7 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
+import uk.gov.hmrc.customsservicestatus.models.config.Services
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -64,17 +65,13 @@ object CustomsServiceStatusWithDesc {
   implicit val logger: Logger = Logger(this.getClass.getName)
   implicit val format = Json.format[CustomsServiceStatusWithDesc]
 
-  def apply(customsServiceStatus: CustomsServiceStatus): CustomsServiceStatusWithDesc =
-    ConfigSource.default.load[config.Services] match {
-      case Right(services) =>
-        services.services.find(_.name == customsServiceStatus.name) match {
-          case Some(service) => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, service.description)
-          case None          => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, "")
-        }
-      case Left(_) =>
-        logger.warn("Failed to load services config")
-        CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, "")
+  def apply(customsServiceStatus: CustomsServiceStatus): CustomsServiceStatusWithDesc = {
+    val servicesFromConfig = ConfigSource.default.loadOrThrow[uk.gov.hmrc.customsservicestatus.models.config.Services]
+    servicesFromConfig.services.find(_.name == customsServiceStatus.name) match {
+      case Some(service) => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, service.description)
+      case None          => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, "")
     }
+  }
 }
 object Services {
   implicit val format = Json.format[Services]
