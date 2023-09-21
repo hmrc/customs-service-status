@@ -25,31 +25,31 @@ import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
 import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State, Status}
-import uk.gov.hmrc.customsservicestatus.services.CheckService
+import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import java.time.Instant
 import scala.concurrent.Future
 
-class ServiceControllerSpec extends BaseSpec {
+class CustomsServiceStatusControllerSpec extends BaseSpec {
 
-  val checkService = mock[CheckService]
-  val controller   = new ServiceController(checkService, stubControllerComponents())
+  val checkService = mock[CustomsServiceStatusService]
+  val controller   = new CustomsServiceStatusController(checkService, stubControllerComponents())
 
   "PUT /services/:service/status" should {
 
     "return Ok with 'Not Found' in response if service is not configured" in {
-      val service = "myService"
-      when(checkService.check(service)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
-      val result = controller.check(service)(FakeRequest().withBody(Json.toJson("{}")))
+      val serviceName = "myService"
+      when(checkService.check(serviceName)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("{}")))
       status(result)                  shouldBe NOT_FOUND
-      contentAsJson(result).as[State] shouldBe (State("Not Found"))
+      contentAsJson(result).as[State] shouldBe (State(s"Service with name $serviceName not configured"))
     }
 
     "return Ok with with name and description in response if service can be found in config" in {
       val service = "myService"
       when(checkService.check(service))
         .thenReturn(EitherT.rightT[Future, CustomsServiceStatusError](CustomsServiceStatus(service, Status(Some("Ok"), Some(Instant.now)))))
-      val result = controller.check(service)(FakeRequest().withBody(Json.toJson("{}")))
+      val result = controller.updateServiceStatus(service)(FakeRequest().withBody(Json.toJson("{}")))
       status(result)                  shouldBe OK
       contentAsJson(result).as[State] shouldBe (State("OK"))
     }

@@ -21,14 +21,14 @@ import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.S
 import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, Status}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
-import uk.gov.hmrc.customsservicestatus.services.CheckService
+import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import java.time.Instant
 import scala.concurrent.Future
 
 class CheckServiceSpec extends BaseSpec {
   val repo    = mock[CustomsServiceStatusRepository]
-  val service = new CheckService(repo)
+  val service = new CustomsServiceStatusService(repo)
 
   "check" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
@@ -39,7 +39,7 @@ class CheckServiceSpec extends BaseSpec {
     "return Right with CustomsServiceStatus if success" in {
       val serviceName = "haulier"
       val result      = CustomsServiceStatus(serviceName, Status(Some("Ok"), Some(Instant.now)))
-      when(repo.check(serviceName)).thenReturn(Future.successful(result))
+      when(repo.updateServiceStatus(serviceName)).thenReturn(Future.successful(result))
       service.check(serviceName).value.futureValue shouldBe (Right(result))
     }
   }

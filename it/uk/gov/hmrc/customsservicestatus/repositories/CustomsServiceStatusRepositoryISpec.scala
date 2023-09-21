@@ -33,7 +33,7 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
   "check" should {
     "update the service with given status and lastUpdated" in {
       val service = "myService"
-      inside(await(customsServiceStatusRepository.check(service))) {
+      inside(await(customsServiceStatusRepository.updateServiceStatus(service))) {
         case result =>
           result.name               shouldBe (service)
           result.status.state       shouldBe (Some("OK"))
@@ -49,8 +49,8 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
     }
     "return all the customsServiceStatus entries in the database" in {
       val (service1, service2) = ("service1", "service2")
-      await(customsServiceStatusRepository.check(service1))
-      await(customsServiceStatusRepository.check(service2))
+      await(customsServiceStatusRepository.updateServiceStatus(service1))
+      await(customsServiceStatusRepository.updateServiceStatus(service2))
       val result = await(customsServiceStatusRepository.findAll())
       result.size shouldBe (2)
     }

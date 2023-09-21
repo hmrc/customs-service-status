@@ -23,7 +23,6 @@ import org.mongodb.scala._
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
-import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
@@ -37,8 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 class CustomsServiceStatusRepository @Inject()(
-  mongo:                     MongoComponent,
-  appConfig:                 AppConfig
+  mongo:                     MongoComponent
 )(implicit executionContext: ExecutionContext)
     extends PlayMongoRepository[CustomsServiceStatus](
       collectionName = "customs-service-status",
@@ -53,7 +51,7 @@ class CustomsServiceStatusRepository @Inject()(
       )
     ) {
 
-  def check(service: String): Future[CustomsServiceStatus] =
+  def updateServiceStatus(service: String): Future[CustomsServiceStatus] =
     Mdc.preservingMdc(
       collection
         .findOneAndUpdate(

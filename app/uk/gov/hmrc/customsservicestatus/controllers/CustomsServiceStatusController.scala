@@ -19,26 +19,26 @@ package uk.gov.hmrc.customsservicestatus.controllers
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
+import uk.gov.hmrc.customsservicestatus.models.Services._
 import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.models.State._
-import uk.gov.hmrc.customsservicestatus.models.Services._
-import uk.gov.hmrc.customsservicestatus.services.CheckService
+import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton()
-class ServiceController @Inject()(checkService: CheckService, cc: ControllerComponents)(implicit ec: ExecutionContext)
+class CustomsServiceStatusController @Inject()(checkService: CustomsServiceStatusService, cc: ControllerComponents)(implicit ec: ExecutionContext)
     extends BaseCustomsServiceStatusController(cc) {
 
-  def check(service: String): Action[AnyContent] = Action.async { implicit request =>
+  def updateServiceStatus(serviceName: String): Action[AnyContent] = Action.async { implicit request =>
     checkService
-      .check(service)
+      .check(serviceName)
       .fold(
         error =>
           error match {
             case LoadServicesConfigError   => ServiceUnavailable
-            case ServiceNotConfiguredError => NotFound(Json.toJson(State("Not Found")))
+            case ServiceNotConfiguredError => NotFound(Json.toJson(State(s"Service with name $serviceName not configured")))
         },
         _ => Ok(Json.toJson(State("OK")))
       )

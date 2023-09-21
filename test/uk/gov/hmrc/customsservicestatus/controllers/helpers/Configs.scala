@@ -20,7 +20,6 @@ import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
 import org.scalatest.BeforeAndAfterAll
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait Configs extends BeforeAndAfterAll {
@@ -33,8 +32,6 @@ trait Configs extends BeforeAndAfterAll {
   def environment: Environment = Environment.simple()
 
   def servicesConfig = new ServicesConfig(configuration)
-
-  implicit def applicationConfig: AppConfig = new AppConfig(configuration)
 
   override def afterAll(): Unit = {
     actorSystem.terminate().futureValue

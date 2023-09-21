@@ -31,16 +31,17 @@ import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusReposit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckService @Inject()(customsServiceStatusRepository: CustomsServiceStatusRepository)(implicit val executionContext: ExecutionContext) {
+class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: CustomsServiceStatusRepository)(
+  implicit val executionContext:                                            ExecutionContext) {
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
-  def check(service: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+  def check(serviceName: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
-    if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(service)))
-      EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.check(service))
+    if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(serviceName)))
+      EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName))
     else {
-      logger.warn(s"Not recognised $service")
+      logger.warn(s"Service with name $serviceName not configured")
       EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError)
     }
   }
