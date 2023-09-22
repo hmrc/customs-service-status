@@ -55,9 +55,7 @@ class CustomsServiceStatusRepository @Inject()(
     Mdc.preservingMdc(
       collection
         .findOneAndUpdate(
-          filter = and(
-            equal("name", service.toBson())
-          ),
+          equal("name", service.toBson()),
           update = combine(
             set("status.state", "OK".toBson()),
             set("status.lastUpdated", BsonDateTime(Instant.now.toEpochMilli))
