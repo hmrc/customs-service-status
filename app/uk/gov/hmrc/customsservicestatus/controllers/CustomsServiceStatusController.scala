@@ -33,7 +33,7 @@ class CustomsServiceStatusController @Inject()(checkService: CustomsServiceStatu
 
   def updateServiceStatus(serviceName: String): Action[AnyContent] = Action.async { implicit request =>
     checkService
-      .check(serviceName)
+      .updateServiceStatus(serviceName)
       .fold(
         error =>
           error match {

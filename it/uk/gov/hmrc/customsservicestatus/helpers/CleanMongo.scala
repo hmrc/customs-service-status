@@ -25,6 +25,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.duration.Duration.Inf
 import scala.concurrent.{Await, Future}
 
@@ -41,7 +42,7 @@ trait CleanMongo extends BeforeAndAfterAll { this: TestSuite with BaseOneAppPerS
 
     Await.ready(
       Future.traverse(repositories)(_.collection.deleteMany(BsonDocument()).toFuture()),
-      Inf
+      20.seconds
     )
 
     app.injector.instanceOf[ApplicationLifecycle].addStopHook { () =>

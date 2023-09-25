@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus.controllers.services
+package uk.gov.hmrc.customsservicestatus.services
 
 import org.mockito.Mockito.when
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
-import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
+import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, Status}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
@@ -26,21 +26,21 @@ import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 import java.time.Instant
 import scala.concurrent.Future
 
-class CheckServiceSpec extends BaseSpec {
+class CustomsServiceStatusServiceSpec extends BaseSpec {
   val repo    = mock[CustomsServiceStatusRepository]
   val service = new CustomsServiceStatusService(repo)
 
-  "check" should {
+  "updateServiceStatus" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
       val serviceName = "myService"
-      service.check(serviceName).value.futureValue shouldBe (Left(ServiceNotConfiguredError))
+      service.updateServiceStatus(serviceName).value.futureValue shouldBe (Left(ServiceNotConfiguredError))
     }
 
     "return Right with CustomsServiceStatus if success" in {
       val serviceName = "haulier"
       val result      = CustomsServiceStatus(serviceName, Status(Some("Ok"), Some(Instant.now)))
       when(repo.updateServiceStatus(serviceName)).thenReturn(Future.successful(result))
-      service.check(serviceName).value.futureValue shouldBe (Right(result))
+      service.updateServiceStatus(serviceName).value.futureValue shouldBe (Right(result))
     }
   }
 }

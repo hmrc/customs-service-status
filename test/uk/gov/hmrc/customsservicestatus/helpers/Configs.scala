@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus.controllers.helpers
+package uk.gov.hmrc.customsservicestatus.helpers
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory

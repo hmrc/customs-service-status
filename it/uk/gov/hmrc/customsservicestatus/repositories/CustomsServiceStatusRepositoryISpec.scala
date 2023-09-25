@@ -30,7 +30,7 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
 
   val customsServiceStatusRepository: CustomsServiceStatusRepository = app.injector.instanceOf[CustomsServiceStatusRepository]
 
-  "check" should {
+  "updateServiceStatus" should {
     "update the service with given status and lastUpdated" in {
       val service = "myService"
       inside(await(customsServiceStatusRepository.updateServiceStatus(service))) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus.controllers.helpers
+package uk.gov.hmrc.customsservicestatus.helpers
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
@@ -50,7 +50,4 @@ trait BaseSpec
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     .withHeaders(contentType)
 
-//  val PLATFORM_LOG_LIMIT = 12288
-
-//  val logUtils = new LogUtils(PLATFORM_LOG_LIMIT)
 }

@@ -23,7 +23,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, status, stubControllerComponents}
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
-import uk.gov.hmrc.customsservicestatus.controllers.helpers.BaseSpec
+import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State, Status}
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
@@ -39,7 +39,7 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
 
     "return Ok with 'Not Found' in response if service is not configured" in {
       val serviceName = "myService"
-      when(checkService.check(serviceName)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      when(checkService.updateServiceStatus(serviceName)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
       val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("{}")))
       status(result)                  shouldBe NOT_FOUND
       contentAsJson(result).as[State] shouldBe (State(s"Service with name $serviceName not configured"))
@@ -47,7 +47,7 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
 
     "return Ok with with name and description in response if service can be found in config" in {
       val service = "myService"
-      when(checkService.check(service))
+      when(checkService.updateServiceStatus(service))
         .thenReturn(EitherT.rightT[Future, CustomsServiceStatusError](CustomsServiceStatus(service, Status(Some("Ok"), Some(Instant.now)))))
       val result = controller.updateServiceStatus(service)(FakeRequest().withBody(Json.toJson("{}")))
       status(result)                  shouldBe OK

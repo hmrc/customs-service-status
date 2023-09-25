@@ -27,14 +27,9 @@ class TestService @Inject()(
   customsServiceStatusRepository: CustomsServiceStatusRepository
 )(implicit ec:                    ExecutionContext) {
 
-  def clearAllData: Future[Unit] = {
-    val gmrRepositoryDropF = Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture()).flatMap { _ =>
-      Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes)
-    }
-
+  def clearAllData: Future[Unit] =
     for {
-      _ <- gmrRepositoryDropF
+      _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
+      _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes)
     } yield ()
-  }
-
 }

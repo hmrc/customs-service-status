@@ -36,7 +36,7 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
-  def check(serviceName: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+  def updateServiceStatus(serviceName: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
     if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(serviceName)))
       EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName))

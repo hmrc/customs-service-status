@@ -17,7 +17,9 @@
 package uk.gov.hmrc.customsservicestatus.models
 
 import play.api.libs.json.Json
+
 case class State(state: String)
+
 object State {
   implicit val format = Json.format[State]
 }
