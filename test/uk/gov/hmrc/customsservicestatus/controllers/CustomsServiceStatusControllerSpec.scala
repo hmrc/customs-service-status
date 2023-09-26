@@ -37,7 +37,7 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
 
   "PUT /services/:service/status" should {
 
-    "return Ok with 'Not Found' in response if service is not configured" in {
+    "return NOT_FOUND if service is not configured" in {
       val serviceName = "myService"
       when(checkService.updateServiceStatus(serviceName)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
       val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("{}")))
