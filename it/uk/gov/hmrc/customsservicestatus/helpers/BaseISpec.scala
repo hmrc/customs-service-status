@@ -57,14 +57,13 @@ abstract class BaseISpec
     with MimeTypes
     with HttpProtocol
     with HttpVerbs
-    with ResultExtractors
-    with AdditionalAppConfig {
+    with ResultExtractors {
 
   implicit lazy val system:       ActorSystem      = ActorSystem()
   implicit lazy val materializer: Materializer     = Materializer(system)
   implicit def ec:                ExecutionContext = global
 
-  additionalAppConfig ++= Map(
+  val additionalAppConfig = Map(
     "mongodb.uri"      -> "mongodb://localhost:27017/customs-service-status-test",
     "metrics.enabled"  -> false,
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
@@ -77,7 +76,7 @@ abstract class BaseISpec
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
       .disable[com.kenshoo.play.metrics.PlayModule]
-      .configure(additionalAppConfig.toMap)
+      .configure(additionalAppConfig)
       .in(Mode.Test)
       .build()
 
