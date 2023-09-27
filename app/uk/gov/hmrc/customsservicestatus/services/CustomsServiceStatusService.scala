@@ -47,10 +47,10 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
   }
 
   def listAll: Future[models.Services] =
-    customsServiceStatusRepository.findAll() map { servicesFromRepo =>
+    customsServiceStatusRepository.findAll() map { services =>
       val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
       val listCustomsServiceWithDescription = servicesFromConfig.services map { serviceFromConfig =>
-        CustomsServiceStatusWithDesc(servicesFromRepo, serviceFromConfig)
+        CustomsServiceStatusWithDesc(services, serviceFromConfig)
       }
       models.Services(listCustomsServiceWithDescription)
     }

@@ -65,9 +65,9 @@ object CustomsServiceStatusWithDesc {
   implicit val logger: Logger = Logger(this.getClass.getName)
   implicit val format = Json.format[CustomsServiceStatusWithDesc]
 
-  def apply(listCustomsServiceStatusFromRepo: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
+  def apply(serviceStatuses: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
 
-    val status: Status = listCustomsServiceStatusFromRepo.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
+    val status: Status = serviceStatuses.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
       case None                => Status(Some("Unknown"), None)
       case Some(serviceStatus) => serviceStatus.status
     }
