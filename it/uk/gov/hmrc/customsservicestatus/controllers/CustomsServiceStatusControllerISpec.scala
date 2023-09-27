@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
+import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.config.Services
 
 class CustomsServiceStatusControllerISpec extends BaseISpec {
@@ -33,16 +34,24 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
     "return Ok with empty list if there are services configured, but no corresponding entries in the db" in {
 
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
-      status(result)                                   shouldBe (OK)
-      contentAsJson(result).as[Services].services.size shouldBe (0)
+      status(result) shouldBe (OK)
+      val servicesStatus = contentAsJson(result).as[models.Services].services
+      servicesStatus.size                    shouldBe 1
+      servicesStatus.head.name               shouldBe "Haulier"
+      servicesStatus.head.status.state       shouldBe Some("Unknown")
+      servicesStatus.head.status.lastUpdated shouldBe None
     }
 
     "return Ok with one service in the response if it is configured and have a corresponding entry in the db" in {
       val insertEntry = callRoute(fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier")).withMethod("PUT"))
       status(insertEntry) shouldBe (OK)
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
-      status(result)                                   shouldBe (OK)
-      contentAsJson(result).as[Services].services.size shouldBe (1)
+      status(result) shouldBe (OK)
+      val servicesStatus = contentAsJson(result).as[models.Services].services
+      servicesStatus.size                              shouldBe 1
+      servicesStatus.head.name                         shouldBe "Haulier"
+      servicesStatus.head.status.state                 shouldBe Some("OK")
+      servicesStatus.head.status.lastUpdated.isDefined shouldBe true
     }
 
   }

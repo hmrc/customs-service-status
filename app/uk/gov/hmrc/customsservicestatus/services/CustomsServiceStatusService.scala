@@ -24,8 +24,8 @@ import pureconfig.generic.auto._
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.models
-import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
 import uk.gov.hmrc.customsservicestatus.models.config.Services
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import javax.inject.Inject
@@ -46,11 +46,12 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
     }
   }
 
-  def listAll: Future[models.Services] = {
-    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
-    customsServiceStatusRepository.findAll() map { services =>
-      val serviceNames = servicesFromConfig.services.map(_.name)
-      models.Services(services.filter(s => serviceNames.contains(s.name)) map (CustomsServiceStatusWithDesc(_)))
+  def listAll: Future[models.Services] =
+    customsServiceStatusRepository.findAll() map { servicesFromRepo =>
+      val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
+      val listCustomsServiceWithDescription = servicesFromConfig.services map { serviceFromConfig =>
+        CustomsServiceStatusWithDesc(servicesFromRepo, serviceFromConfig)
+      }
+      models.Services(listCustomsServiceWithDescription)
     }
-  }
 }

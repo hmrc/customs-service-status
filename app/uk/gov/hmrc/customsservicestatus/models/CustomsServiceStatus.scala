@@ -21,7 +21,7 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import uk.gov.hmrc.customsservicestatus.models.config.{Services => ServicesFromConfig}
+import uk.gov.hmrc.customsservicestatus.models.config.{Services => CustomsServicesFromConfig, Service => ServiceFromConfig}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -65,12 +65,13 @@ object CustomsServiceStatusWithDesc {
   implicit val logger: Logger = Logger(this.getClass.getName)
   implicit val format = Json.format[CustomsServiceStatusWithDesc]
 
-  def apply(customsServiceStatus: CustomsServiceStatus): CustomsServiceStatusWithDesc = {
-    val servicesFromConfig = ConfigSource.default.loadOrThrow[ServicesFromConfig]
-    servicesFromConfig.services.find(_.name == customsServiceStatus.name) match {
-      case Some(service) => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, service.description)
-      case None          => CustomsServiceStatusWithDesc(customsServiceStatus.name, customsServiceStatus.status, "")
+  def apply(listCustomsServiceStatusFromRepo: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
+
+    val status: Status = listCustomsServiceStatusFromRepo.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
+      case None                => Status(Some("Unknown"), None)
+      case Some(serviceStatus) => serviceStatus.status
     }
+    CustomsServiceStatusWithDesc(serviceFromConfig.name, status, serviceFromConfig.description)
   }
 }
 object Services {
