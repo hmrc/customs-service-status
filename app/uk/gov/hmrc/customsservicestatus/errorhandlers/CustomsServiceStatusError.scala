@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customservicestatus.controllers
+package uk.gov.hmrc.customservicestatus.errorhandlers
 
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+sealed trait CustomsServiceStatusError
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
-
-  def hello(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok("Hello world"))
-  }
+object CustomsServiceStatusError {
+  case object LoadServicesConfigError extends CustomsServiceStatusError
+  case object ServiceNotConfiguredError extends CustomsServiceStatusError
 }

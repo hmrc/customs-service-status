@@ -15,14 +15,14 @@ lazy val microservice = Project("customs-service-status", file("."))
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.17.4",
     // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
     // suppress warnings in generated routes files
     scalacOptions += "-Wconf:src=routes/.*:s",
-    playDefaultPort := 8990
+    playDefaultPort := 8991
   )
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(CodeCoverageSettings.settings: _*)
 
 evictionErrorLevel := Level.Warn
