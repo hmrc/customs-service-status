@@ -39,19 +39,20 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
 
     "return NOT_FOUND if service is not configured" in {
       val serviceName = "myService"
-      when(checkService.updateServiceStatus(serviceName)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
-      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("{}")))
+      val state       = "OK"
+      when(checkService.updateServiceStatus(serviceName, state)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson(State("OK"))))
       status(result)                  shouldBe NOT_FOUND
       contentAsJson(result).as[State] shouldBe (State(s"Service with name $serviceName not configured"))
     }
 
     "return Ok with with name and description in response if service can be found in config" in {
       val service = "myService"
-      when(checkService.updateServiceStatus(service))
+      val state   = "OK"
+      when(checkService.updateServiceStatus(service, state))
         .thenReturn(EitherT.rightT[Future, CustomsServiceStatusError](CustomsServiceStatus(service, Status(Some("Ok"), Some(Instant.now)))))
-      val result = controller.updateServiceStatus(service)(FakeRequest().withBody(Json.toJson("{}")))
-      status(result)                  shouldBe OK
-      contentAsJson(result).as[State] shouldBe (State("OK"))
+      val result = controller.updateServiceStatus(service)(FakeRequest().withBody(Json.toJson(State("OK"))))
+      status(result) shouldBe OK
     }
   }
 

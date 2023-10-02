@@ -51,13 +51,13 @@ class CustomsServiceStatusRepository @Inject()(
       )
     ) {
 
-  def updateServiceStatus(service: String): Future[CustomsServiceStatus] =
+  def updateServiceStatus(service: String, state: String): Future[CustomsServiceStatus] =
     Mdc.preservingMdc(
       collection
         .findOneAndUpdate(
           equal("name", service.toBson()),
           update = combine(
-            set("status.state", "OK".toBson()),
+            set("status.state", state.toBson()),
             set("status.lastUpdated", BsonDateTime(Instant.now.toEpochMilli))
           ),
           options = FindOneAndUpdateOptions()
