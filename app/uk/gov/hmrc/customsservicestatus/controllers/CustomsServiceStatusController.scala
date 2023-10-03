@@ -28,12 +28,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton()
-class CustomsServiceStatusController @Inject()(checkService: CustomsServiceStatusService, cc: ControllerComponents)(implicit ec: ExecutionContext)
+class CustomsServiceStatusController @Inject()(customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(
+  implicit ec:                                                              ExecutionContext)
     extends BaseCustomsServiceStatusController(cc) {
 
   def updateServiceStatus(serviceName: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     validateJson[State] { state =>
-      checkService
+      customsServiceStatusService
         .updateServiceStatus(serviceName, state.state)
         .fold(
           error =>
@@ -47,6 +48,6 @@ class CustomsServiceStatusController @Inject()(checkService: CustomsServiceStatu
   }
 
   def list(): Action[AnyContent] = Action.async { implicit request =>
-    checkService.listAll map (result => Ok(Json.toJson(result)))
+    customsServiceStatusService.listAll map (result => Ok(Json.toJson(result)))
   }
 }
