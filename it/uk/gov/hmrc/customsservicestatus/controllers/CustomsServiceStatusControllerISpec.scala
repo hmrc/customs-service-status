@@ -16,9 +16,11 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
+import play.api.libs.json.Json
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models
+import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.models.config.Services
 
 class CustomsServiceStatusControllerISpec extends BaseISpec {
@@ -43,7 +45,8 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
     }
 
     "return Ok with one service in the response if it is configured and have a corresponding entry in the db" in {
-      val insertEntry = callRoute(fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier")).withMethod("PUT"))
+      val insertEntry = callRoute(
+        fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier")).withMethod("PUT").withJsonBody(Json.toJson(State("OK"))))
       status(insertEntry) shouldBe (OK)
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
       status(result) shouldBe (OK)

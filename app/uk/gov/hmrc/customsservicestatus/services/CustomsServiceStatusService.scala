@@ -36,10 +36,10 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
-  def updateServiceStatus(serviceName: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+  def updateServiceStatus(serviceName: String, state: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
     if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(serviceName)))
-      EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName))
+      EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName, state))
     else {
       logger.warn(s"Service with name $serviceName not configured")
       EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError)

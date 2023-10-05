@@ -17,13 +17,23 @@
 package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.Logger
-import play.api.mvc.ControllerComponents
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
+import play.api.mvc.{ControllerComponents, Request, Result}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 abstract class BaseCustomsServiceStatusController(cc: ControllerComponents)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
+  def validateJson[T](f: T => Future[Result])(implicit request: Request[JsValue], r: Reads[T]): Future[Result] =
+    request.body.validate[T] match {
+      case JsSuccess(t, _) => f(t)
+      case error @ JsError(errors) =>
+        logger.warn(
+          s"""|Failed to validate JSON from request body: ${error.toLogFormat}""".stripMargin
+        )
+        Future(BadRequest(s"$errors"))
+    }
 }
