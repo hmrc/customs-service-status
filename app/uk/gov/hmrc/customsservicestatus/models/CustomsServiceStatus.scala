@@ -34,9 +34,8 @@ case class CustomsServiceStatusWithDesc(name: String, status: Status, descriptio
 case class Services(services: List[CustomsServiceStatusWithDesc])
 
 object Status {
+  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   val mongoFormat: OFormat[Status] = {
-    implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-
     val read: Reads[Status] = (
       (JsPath \ "state").readNullable[String].orElse(Reads.pure(None)) and
         (JsPath \ "lastUpdated").readNullable[Instant]
@@ -68,7 +67,7 @@ object CustomsServiceStatusWithDesc {
   def apply(serviceStatuses: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
 
     val status: Status = serviceStatuses.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
-      case None                => Status(Some("Unknown"), None)
+      case None                => Status(Some("UNKNOWN"), None)
       case Some(serviceStatus) => serviceStatus.status
     }
     CustomsServiceStatusWithDesc(serviceFromConfig.name, status, serviceFromConfig.description)
