@@ -67,7 +67,7 @@ object CustomsServiceStatusWithDesc {
   def apply(serviceStatuses: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
 
     val status: Status = serviceStatuses.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
-      case None                => Status(Some("Unknown"), None)
+      case None                => Status(Some("UNKNOWN"), None)
       case Some(serviceStatus) => serviceStatus.status
     }
     CustomsServiceStatusWithDesc(serviceFromConfig.name, status, serviceFromConfig.description)
