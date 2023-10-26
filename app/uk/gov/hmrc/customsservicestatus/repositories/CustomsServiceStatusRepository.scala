@@ -23,9 +23,10 @@ import org.mongodb.scala._
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
-import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, Status}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 import uk.gov.hmrc.play.http.logging.Mdc
 
@@ -41,26 +42,20 @@ class CustomsServiceStatusRepository @Inject()(
     extends PlayMongoRepository[CustomsServiceStatus](
       collectionName = "customs-service-status",
       mongoComponent = mongo,
-      domainFormat   = CustomsServiceStatus.mongoFormat,
+      domainFormat   = CustomsServiceStatus.format(MongoJavatimeFormats.instantFormat),
       indexes = Seq(
         IndexModel(ascending("name"), IndexOptions().sparse(true)),
         IndexModel(ascending("status.lastUpdated"), IndexOptions().name("lastUpdated").sparse(false)),
-      ),
-      extraCodecs = Seq[Codec[_]](
-        Codecs.playFormatCodec[CustomsServiceStatus](CustomsServiceStatus.mongoFormat)
       )
     ) {
 
-  def updateServiceStatus(service: String, state: String): Future[CustomsServiceStatus] =
+  def updateServiceStatus(name: String, state: String): Future[CustomsServiceStatus] =
     Mdc.preservingMdc(
       collection
-        .findOneAndUpdate(
-          equal("name", service.toBson()),
-          update = combine(
-            set("status.state", state.toBson()),
-            set("status.lastUpdated", BsonDateTime(Instant.now.toEpochMilli))
-          ),
-          options = FindOneAndUpdateOptions()
+        .findOneAndReplace(
+          equal("name", name.toBson()),
+          CustomsServiceStatus(name, Status(Some(state), Some(Instant.now()))),
+          FindOneAndReplaceOptions()
             .returnDocument(ReturnDocument.AFTER)
             .upsert(true)
         )

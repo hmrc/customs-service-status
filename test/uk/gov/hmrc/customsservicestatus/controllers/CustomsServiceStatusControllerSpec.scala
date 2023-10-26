@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, status, stubControllerComponents}
 import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
+import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State, Status}
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService

@@ -17,12 +17,8 @@
 package uk.gov.hmrc.customsservicestatus.models
 
 import play.api.Logger
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
-import pureconfig.ConfigSource
-import pureconfig.generic.auto._
-import uk.gov.hmrc.customsservicestatus.models.config.{Services => CustomsServicesFromConfig, Service => ServiceFromConfig}
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import uk.gov.hmrc.customsservicestatus.models.config.{Service => ServiceFromConfig}
 
 import java.time.Instant
 
@@ -34,30 +30,11 @@ case class CustomsServiceStatusWithDesc(name: String, status: Status, descriptio
 case class Services(services: List[CustomsServiceStatusWithDesc])
 
 object Status {
-  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-  val mongoFormat: OFormat[Status] = {
-    val read: Reads[Status] = (
-      (JsPath \ "state").readNullable[String].orElse(Reads.pure(None)) and
-        (JsPath \ "lastUpdated").readNullable[Instant]
-    )(Status.apply _)
-
-    OFormat[Status](read, Json.writes[Status])
-  }
-  implicit val format: OFormat[Status] = Json.format[Status]
+  implicit def format(implicit instantFormat: Format[Instant]): OFormat[Status] = Json.using[Json.WithDefaultValues].format[Status]
 }
 
 object CustomsServiceStatus {
-
-  val mongoFormat: OFormat[CustomsServiceStatus] = {
-    val read: Reads[CustomsServiceStatus] = (
-      (JsPath \ "name").read[String] and
-        (JsPath \ "status").read[Status](Status.mongoFormat)
-    )(CustomsServiceStatus.apply _)
-
-    OFormat[CustomsServiceStatus](read, Json.writes[CustomsServiceStatus])
-  }
-
-  implicit val format: OFormat[CustomsServiceStatus] = Json.format[CustomsServiceStatus]
+  implicit def format(implicit instantFormat: Format[Instant]): OFormat[CustomsServiceStatus] = Json.format[CustomsServiceStatus]
 }
 
 object CustomsServiceStatusWithDesc {
@@ -73,6 +50,7 @@ object CustomsServiceStatusWithDesc {
     CustomsServiceStatusWithDesc(serviceFromConfig.name, status, serviceFromConfig.description)
   }
 }
+
 object Services {
   implicit val format = Json.format[Services]
 }
