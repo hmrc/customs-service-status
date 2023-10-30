@@ -34,8 +34,8 @@ case class CustomsServiceStatusWithDesc(name: String, status: Status, descriptio
 case class Services(services: List[CustomsServiceStatusWithDesc])
 
 object Status {
-  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
   val mongoFormat: OFormat[Status] = {
+    implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
     val read: Reads[Status] = (
       (JsPath \ "state").readNullable[String].orElse(Reads.pure(None)) and
         (JsPath \ "lastUpdated").readNullable[Instant]
