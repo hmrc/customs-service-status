@@ -21,7 +21,6 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.State
-import uk.gov.hmrc.customsservicestatus.models.config.Services
 
 class CustomsServiceStatusControllerISpec extends BaseISpec {
 
@@ -36,7 +35,7 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
     "return Ok with empty list if there are services configured, but no corresponding entries in the db" in {
 
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
-      status(result) shouldBe (OK)
+      status(result) shouldBe OK
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size                    shouldBe 1
       servicesStatus.head.name               shouldBe "Haulier"
@@ -48,10 +47,10 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       val insertEntry = callRoute(
         fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier"))
           .withMethod("PUT")
-          .withJsonBody(Json.toJson(State("AVAILABLE"))))
-      status(insertEntry) shouldBe (OK)
+          .withJsonBody(Json.toJson[State](State.AVAILABLE)))
+      status(insertEntry) shouldBe OK
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
-      status(result) shouldBe (OK)
+      status(result) shouldBe OK
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size                              shouldBe 1
       servicesStatus.head.name                         shouldBe "Haulier"

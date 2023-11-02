@@ -18,9 +18,10 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
+import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.{InvalidStateError, UnrecognisedServiceError, UpstreamError}
 import uk.gov.hmrc.customsservicestatus.models.Services._
-import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
+import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.models.State._
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
@@ -33,21 +34,20 @@ class CustomsServiceStatusController @Inject()(customsServiceStatusService: Cust
     extends BaseCustomsServiceStatusController(cc) {
 
   def updateServiceStatus(serviceName: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    validateJson[State] { state =>
+    validateJson[State](errorResponse = InvalidStateError) { state =>
       customsServiceStatusService
-        .updateServiceStatus(serviceName, state.state)
+        .updateServiceStatus(serviceName, state)
         .fold(
-          error =>
-            error match {
-              case LoadServicesConfigError   => ServiceUnavailable
-              case ServiceNotConfiguredError => NotFound(Json.toJson(State(s"Service with name $serviceName not configured")))
+          {
+            case LoadServicesConfigError   => ServiceUnavailable(UpstreamError.message)
+            case ServiceNotConfiguredError => NotFound(UnrecognisedServiceError(serviceName).message)
           },
           _ => Ok
         )
     }
   }
 
-  def list(): Action[AnyContent] = Action.async { implicit request =>
+  def list(): Action[AnyContent] = Action.async { _ =>
     customsServiceStatusService.listAll map (result => Ok(Json.toJson(result)))
   }
 }

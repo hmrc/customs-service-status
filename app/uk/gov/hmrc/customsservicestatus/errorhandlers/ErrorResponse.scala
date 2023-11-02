@@ -16,9 +16,19 @@
 
 package uk.gov.hmrc.customsservicestatus.errorhandlers
 
-sealed trait CustomsServiceStatusError
+sealed trait ErrorResponse {
+  val message: String
+}
 
-object CustomsServiceStatusError {
-  case object LoadServicesConfigError extends CustomsServiceStatusError
-  case object ServiceNotConfiguredError extends CustomsServiceStatusError
+object ErrorResponse {
+
+  case object UpstreamError extends ErrorResponse {
+    override val message: String = "Upstream service unavailable"
+  }
+  case class UnrecognisedServiceError(serviceName: String) extends ErrorResponse {
+    override val message: String = s"Service with name $serviceName not configured"
+  }
+  case object InvalidStateError extends ErrorResponse {
+    override val message: String = "Invalid service state"
+  }
 }

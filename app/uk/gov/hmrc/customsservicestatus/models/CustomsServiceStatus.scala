@@ -19,9 +19,7 @@ package uk.gov.hmrc.customsservicestatus.models
 import play.api.Logger
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
-import pureconfig.ConfigSource
-import pureconfig.generic.auto._
-import uk.gov.hmrc.customsservicestatus.models.config.{Services => CustomsServicesFromConfig, Service => ServiceFromConfig}
+import uk.gov.hmrc.customsservicestatus.models.config.{Service => ServiceFromConfig}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
@@ -61,8 +59,8 @@ object CustomsServiceStatus {
 }
 
 object CustomsServiceStatusWithDesc {
-  implicit val logger: Logger = Logger(this.getClass.getName)
-  implicit val format = Json.format[CustomsServiceStatusWithDesc]
+  implicit val logger: Logger                                = Logger(this.getClass.getName)
+  implicit val format: OFormat[CustomsServiceStatusWithDesc] = Json.format[CustomsServiceStatusWithDesc]
 
   def apply(serviceStatuses: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
 
@@ -74,5 +72,5 @@ object CustomsServiceStatusWithDesc {
   }
 }
 object Services {
-  implicit val format = Json.format[Services]
+  implicit val format: OFormat[Services] = Json.format[Services]
 }
