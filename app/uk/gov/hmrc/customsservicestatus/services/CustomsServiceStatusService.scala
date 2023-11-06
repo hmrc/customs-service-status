@@ -18,40 +18,47 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import cats.data.EitherT
 import cats.implicits._
-import play.api.Logger
+import com.google.inject.Singleton
+import play.api.Logging
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
-import uk.gov.hmrc.customsservicestatus.models
-import uk.gov.hmrc.customsservicestatus.models.config.Services
-import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc, State}
+import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
+import java.time.Instant
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: CustomsServiceStatusRepository)(
-  implicit val executionContext:                                            ExecutionContext) {
+  implicit val executionContext:                                            ExecutionContext)
+    extends Logging {
 
-  implicit val logger: Logger = Logger(this.getClass.getName)
+  private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
 
-  def updateServiceStatus(serviceName: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
-    val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
-    if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(serviceName)))
-      EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName, state))
-    else {
-      logger.warn(s"Service with name $serviceName not configured")
-      EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError)
+  def updateServiceStatus(serviceName: String, state: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+    val configuredService = knownServices.services.find(_.name == serviceName)
+    configuredService match {
+      case Some(service) =>
+        val toUpdate = CustomsServiceStatus(serviceName, service.description, Some(state), Some(Instant.now()))
+        EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(toUpdate))
+      case None =>
+        logger.warn(s"Service with name $serviceName not configured")
+        EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError)
     }
   }
 
-  def listAll: Future[models.Services] =
-    customsServiceStatusRepository.findAll() map { services =>
-      val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
-      val listCustomsServiceWithDescription = servicesFromConfig.services map { serviceFromConfig =>
-        CustomsServiceStatusWithDesc(services, serviceFromConfig)
+  def listAll: Future[Services] =
+    customsServiceStatusRepository.findAll().map { servicesFromDB =>
+      val services = knownServices.services.map { configuredService =>
+        val matchedService = servicesFromDB.find(_.name == configuredService.name)
+        val state          = matchedService.flatMap(_.state).orElse(Some("UNKNOWN"))
+        val lastUpdated    = matchedService.flatMap(_.lastUpdated)
+        CustomsServiceStatus(configuredService.name, configuredService.description, state, lastUpdated)
       }
-      models.Services(listCustomsServiceWithDescription)
+
+      Services(services)
     }
 }
