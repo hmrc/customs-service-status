@@ -46,6 +46,15 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
       contentAsString(result) shouldBe s"Service with name $serviceName not configured"
     }
 
+    "return BAD_REQUEST if invalid json state supplied" in {
+      val serviceName = "myService"
+      when(checkService.updateServiceStatus(serviceName, State.AVAILABLE))
+        .thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("OK")))
+      status(result)          shouldBe BAD_REQUEST
+      contentAsString(result) shouldBe "invalid value: OK for State type"
+    }
+
     "return OK with with name and description in response if service can be found in config" in {
       val service = "myService"
       when(checkService.updateServiceStatus(service, State.AVAILABLE))

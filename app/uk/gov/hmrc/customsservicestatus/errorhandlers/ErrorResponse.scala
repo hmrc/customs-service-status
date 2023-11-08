@@ -25,7 +25,4 @@ object ErrorResponse {
   case class UnrecognisedServiceError(serviceName: String) extends ErrorResponse {
     override val message: String = s"Service with name $serviceName not configured"
   }
-  case object InvalidStateError extends ErrorResponse {
-    override val message: String = "Invalid service state"
-  }
 }

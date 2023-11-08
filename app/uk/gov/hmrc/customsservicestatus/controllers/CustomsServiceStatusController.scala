@@ -19,7 +19,7 @@ package uk.gov.hmrc.customsservicestatus.controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
-import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.{InvalidStateError, UnrecognisedServiceError}
+import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.UnrecognisedServiceError
 import uk.gov.hmrc.customsservicestatus.models.Services._
 import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.models.State._
@@ -34,7 +34,7 @@ class CustomsServiceStatusController @Inject()(customsServiceStatusService: Cust
     extends BaseCustomsServiceStatusController(cc) {
 
   def updateServiceStatus(serviceName: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    validateJson[State](errorResponse = InvalidStateError) { state =>
+    validateJson[State] { state =>
       customsServiceStatusService
         .updateServiceStatus(serviceName, state)
         .fold(
