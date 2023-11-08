@@ -21,7 +21,6 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.UnrecognisedServiceError
 import uk.gov.hmrc.customsservicestatus.models.State
-import uk.gov.hmrc.customsservicestatus.models.State._
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
