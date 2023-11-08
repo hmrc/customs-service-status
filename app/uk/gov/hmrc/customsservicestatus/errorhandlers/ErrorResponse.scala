@@ -22,9 +22,6 @@ sealed trait ErrorResponse {
 
 object ErrorResponse {
 
-  case object UpstreamError extends ErrorResponse {
-    override val message: String = "Upstream service unavailable"
-  }
   case class UnrecognisedServiceError(serviceName: String) extends ErrorResponse {
     override val message: String = s"Service with name $serviceName not configured"
   }

@@ -18,8 +18,8 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.{LoadServicesConfigError, ServiceNotConfiguredError}
-import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.{InvalidStateError, UnrecognisedServiceError, UpstreamError}
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.{InvalidStateError, UnrecognisedServiceError}
 import uk.gov.hmrc.customsservicestatus.models.Services._
 import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.models.State._
@@ -39,7 +39,6 @@ class CustomsServiceStatusController @Inject()(customsServiceStatusService: Cust
         .updateServiceStatus(serviceName, state)
         .fold(
           {
-            case LoadServicesConfigError   => ServiceUnavailable(UpstreamError.message)
             case ServiceNotConfiguredError => NotFound(UnrecognisedServiceError(serviceName).message)
           },
           _ => Ok

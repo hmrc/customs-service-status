@@ -19,6 +19,6 @@ package uk.gov.hmrc.customsservicestatus.errorhandlers
 sealed trait CustomsServiceStatusError
 
 object CustomsServiceStatusError {
-  case object LoadServicesConfigError extends CustomsServiceStatusError
+
   case object ServiceNotConfiguredError extends CustomsServiceStatusError
 }
