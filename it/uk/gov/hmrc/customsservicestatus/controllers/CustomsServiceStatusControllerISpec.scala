@@ -45,7 +45,7 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
 
     "return Ok with one service in the response if it is configured and have a corresponding entry in the db" in {
       val insertEntry = callRoute(
-        fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier"))
+        fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("Haulier"))
           .withMethod("PUT")
           .withJsonBody(Json.toJson[State](State.AVAILABLE)))
       status(insertEntry) shouldBe OK
