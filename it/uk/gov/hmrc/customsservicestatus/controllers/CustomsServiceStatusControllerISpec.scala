@@ -21,6 +21,7 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.State
+import uk.gov.hmrc.customsservicestatus.models.State.{AVAILABLE, UNKNOWN}
 
 class CustomsServiceStatusControllerISpec extends BaseISpec {
 
@@ -39,7 +40,7 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size             shouldBe 1
       servicesStatus.head.name        shouldBe "Haulier"
-      servicesStatus.head.state       shouldBe Some("UNKNOWN")
+      servicesStatus.head.state       shouldBe Some(UNKNOWN)
       servicesStatus.head.lastUpdated shouldBe None
     }
 
@@ -47,14 +48,14 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       val insertEntry = callRoute(
         fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("Haulier"))
           .withMethod("PUT")
-          .withJsonBody(Json.toJson[State](State.AVAILABLE)))
+          .withJsonBody(Json.toJson[State](AVAILABLE)))
       status(insertEntry) shouldBe OK
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
       status(result) shouldBe OK
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size                       shouldBe 1
       servicesStatus.head.name                  shouldBe "Haulier"
-      servicesStatus.head.state                 shouldBe Some("AVAILABLE")
+      servicesStatus.head.state                 shouldBe Some(AVAILABLE)
       servicesStatus.head.lastUpdated.isDefined shouldBe true
     }
 

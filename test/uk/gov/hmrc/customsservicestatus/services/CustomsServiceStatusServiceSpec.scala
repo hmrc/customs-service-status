@@ -20,6 +20,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
+import uk.gov.hmrc.customsservicestatus.models.State.AVAILABLE
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
@@ -36,18 +37,9 @@ class CustomsServiceStatusServiceSpec extends BaseSpec {
       service.updateServiceStatus(serviceName, State.AVAILABLE).value.futureValue shouldBe Left(ServiceNotConfiguredError)
     }
 
-    "return Right with CustomsServiceStatus if success" in {
-      val serviceName = "haulier"
-      val result      = CustomsServiceStatus(serviceName, Status(Some("Ok"), Some(Instant.now)))
-      when(repo.updateServiceStatus(serviceName, State.AVAILABLE)).thenReturn(Future.successful(result))
-      service.updateServiceStatus(serviceName, State.AVAILABLE).value.futureValue shouldBe Right(result)
-      val state       = "AVAILABLE"
-      service.updateServiceStatus(serviceName, state).value.futureValue shouldBe Left(ServiceNotConfiguredError)
-    }
-
     "return Right with CustomsServiceStatus if service is configured" in {
       val serviceName          = "Haulier" //this is configured in application.conf
-      val state                = "AVAILABLE"
+      val state                = AVAILABLE
       val customsServiceStatus = CustomsServiceStatus(serviceName, "description", Some(state), Some(Instant.now))
       when(repo.updateServiceStatus(any())).thenReturn(Future.successful(customsServiceStatus))
       service.updateServiceStatus(serviceName, state).value.futureValue shouldBe Right(customsServiceStatus)

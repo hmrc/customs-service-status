@@ -24,7 +24,8 @@ import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
-import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.State.UNKNOWN
+import uk.gov.hmrc.customsservicestatus.models._
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import java.time.Instant
@@ -38,7 +39,7 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
 
   private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
 
-  def updateServiceStatus(serviceName: String, state: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+  def updateServiceStatus(serviceName: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val configuredService = knownServices.services.find(_.name == serviceName)
     configuredService match {
       case Some(service) =>
@@ -54,7 +55,7 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
     customsServiceStatusRepository.findAll().map { servicesFromDB =>
       val services = knownServices.services.map { configuredService =>
         val matchedService = servicesFromDB.find(_.name == configuredService.name)
-        val state          = matchedService.flatMap(_.state).orElse(Some("UNKNOWN"))
+        val state          = matchedService.flatMap(_.state).orElse(Some(UNKNOWN))
         val lastUpdated    = matchedService.flatMap(_.lastUpdated)
         CustomsServiceStatus(configuredService.name, configuredService.description, state, lastUpdated)
       }
