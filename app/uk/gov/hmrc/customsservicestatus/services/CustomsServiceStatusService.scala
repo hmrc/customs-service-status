@@ -21,11 +21,11 @@ import cats.implicits._
 import play.api.Logger
 import pureconfig.ConfigSource
 import pureconfig.generic.auto._
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.config.Services
-import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc}
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, CustomsServiceStatusWithDesc, State}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
 
   implicit val logger: Logger = Logger(this.getClass.getName)
 
-  def updateServiceStatus(serviceName: String, state: String): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+  def updateServiceStatus(serviceName: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val servicesFromConfig: Services = ConfigSource.default.loadOrThrow[Services]
     if (servicesFromConfig.services.exists(_.name.equalsIgnoreCase(serviceName)))
       EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(serviceName, state))

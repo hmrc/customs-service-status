@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.repositories
 
 import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes => testRoutes}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
+import uk.gov.hmrc.customsservicestatus.models.State
 
 class CustomsServiceStatusRepositoryISpec extends BaseISpec {
 
@@ -33,11 +34,10 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
   "updateServiceStatus" should {
     "update the service with given status and lastUpdated" in {
       val service = "myService"
-      val state   = "OK"
-      inside(await(customsServiceStatusRepository.updateServiceStatus(service, state))) {
+      inside(await(customsServiceStatusRepository.updateServiceStatus(service, State.AVAILABLE))) {
         case result =>
-          result.name               shouldBe (service)
-          result.status.state       shouldBe (Some("OK"))
+          result.name               shouldBe service
+          result.status.state       shouldBe Some("AVAILABLE")
           result.status.lastUpdated shouldBe defined
       }
     }
@@ -46,15 +46,14 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
   "findAll" should {
     "return empty list if no record in the db" in {
       val result = await(customsServiceStatusRepository.findAll())
-      result.size shouldBe (0)
+      result.size shouldBe 0
     }
     "return all the customsServiceStatus entries in the database" in {
       val (service1, service2) = ("service1", "service2")
-      val state                = "OK"
-      await(customsServiceStatusRepository.updateServiceStatus(service1, state))
-      await(customsServiceStatusRepository.updateServiceStatus(service2, state))
+      await(customsServiceStatusRepository.updateServiceStatus(service1, State.AVAILABLE))
+      await(customsServiceStatusRepository.updateServiceStatus(service2, State.AVAILABLE))
       val result = await(customsServiceStatusRepository.findAll())
-      result.size shouldBe (2)
+      result.size shouldBe 2
     }
   }
 }

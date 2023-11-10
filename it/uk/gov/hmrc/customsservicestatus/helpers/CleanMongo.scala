@@ -25,8 +25,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, DurationInt}
-import scala.concurrent.duration.Duration.Inf
+import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
 trait CleanMongo extends BeforeAndAfterAll { this: TestSuite with BaseOneAppPerSuite =>

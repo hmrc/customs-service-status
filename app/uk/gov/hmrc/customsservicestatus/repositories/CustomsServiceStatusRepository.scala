@@ -23,7 +23,7 @@ import org.mongodb.scala._
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
-import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
@@ -51,13 +51,13 @@ class CustomsServiceStatusRepository @Inject()(
       )
     ) {
 
-  def updateServiceStatus(service: String, state: String): Future[CustomsServiceStatus] =
+  def updateServiceStatus(service: String, state: State): Future[CustomsServiceStatus] =
     Mdc.preservingMdc(
       collection
         .findOneAndUpdate(
           equal("name", service.toBson()),
           update = combine(
-            set("status.state", state.toBson()),
+            set("status.state", state.value.toBson()),
             set("status.lastUpdated", BsonDateTime(Instant.now.toEpochMilli))
           ),
           options = FindOneAndUpdateOptions()

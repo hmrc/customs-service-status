@@ -17,32 +17,29 @@
 package uk.gov.hmrc.customsservicestatus.services
 
 import org.mockito.Mockito.when
-import uk.gov.hmrc.customservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
-import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, Status}
+import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State, Status}
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
-import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import java.time.Instant
 import scala.concurrent.Future
 
 class CustomsServiceStatusServiceSpec extends BaseSpec {
-  val repo    = mock[CustomsServiceStatusRepository]
+  val repo: CustomsServiceStatusRepository = mock[CustomsServiceStatusRepository]
   val service = new CustomsServiceStatusService(repo)
 
   "updateServiceStatus" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
       val serviceName = "myService"
-      val state       = "OK"
-      service.updateServiceStatus(serviceName, state).value.futureValue shouldBe (Left(ServiceNotConfiguredError))
+      service.updateServiceStatus(serviceName, State.AVAILABLE).value.futureValue shouldBe Left(ServiceNotConfiguredError)
     }
 
     "return Right with CustomsServiceStatus if success" in {
       val serviceName = "haulier"
-      val state       = "OK"
       val result      = CustomsServiceStatus(serviceName, Status(Some("Ok"), Some(Instant.now)))
-      when(repo.updateServiceStatus(serviceName, state)).thenReturn(Future.successful(result))
-      service.updateServiceStatus(serviceName, state).value.futureValue shouldBe (Right(result))
+      when(repo.updateServiceStatus(serviceName, State.AVAILABLE)).thenReturn(Future.successful(result))
+      service.updateServiceStatus(serviceName, State.AVAILABLE).value.futureValue shouldBe Right(result)
     }
   }
 }

@@ -34,6 +34,7 @@ abstract class BaseCustomsServiceStatusController(cc: ControllerComponents)(impl
         logger.warn(
           s"""|Failed to validate JSON from request body: ${error.toLogFormat}""".stripMargin
         )
-        Future(BadRequest(s"$errors"))
+        val errorMessage = s"${errors.flatMap(_._2).flatMap(_.messages).mkString(", ")}"
+        Future(BadRequest(errorMessage))
     }
 }
