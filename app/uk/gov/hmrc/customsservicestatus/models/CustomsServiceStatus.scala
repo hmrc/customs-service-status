@@ -16,61 +16,26 @@
 
 package uk.gov.hmrc.customsservicestatus.models
 
-import play.api.Logger
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.Json.WithDefaultValues
 import play.api.libs.json._
-import uk.gov.hmrc.customsservicestatus.models.config.{Service => ServiceFromConfig}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
 
-case class Status(state: Option[String], lastUpdated: Option[Instant])
-
-case class CustomsServiceStatus(name:         String, status: Status)
-case class CustomsServiceStatusWithDesc(name: String, status: Status, description: String)
-
-case class Services(services: List[CustomsServiceStatusWithDesc])
-
-object Status {
-  val mongoFormat: OFormat[Status] = {
-    implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-    val read: Reads[Status] = (
-      (JsPath \ "state").readNullable[String].orElse(Reads.pure(None)) and
-        (JsPath \ "lastUpdated").readNullable[Instant]
-    )(Status.apply _)
-
-    OFormat[Status](read, Json.writes[Status])
-  }
-  implicit val format: OFormat[Status] = Json.format[Status]
-}
+case class CustomsServiceStatus(name: String, description: String, state: Option[State], lastUpdated: Option[Instant])
 
 object CustomsServiceStatus {
 
   val mongoFormat: OFormat[CustomsServiceStatus] = {
-    val read: Reads[CustomsServiceStatus] = (
-      (JsPath \ "name").read[String] and
-        (JsPath \ "status").read[Status](Status.mongoFormat)
-    )(CustomsServiceStatus.apply _)
-
-    OFormat[CustomsServiceStatus](read, Json.writes[CustomsServiceStatus])
+    implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+    Json.using[WithDefaultValues].format[CustomsServiceStatus]
   }
 
-  implicit val format: OFormat[CustomsServiceStatus] = Json.format[CustomsServiceStatus]
+  implicit val format: OFormat[CustomsServiceStatus] = Json.using[WithDefaultValues].format[CustomsServiceStatus]
 }
 
-object CustomsServiceStatusWithDesc {
-  implicit val logger: Logger                                = Logger(this.getClass.getName)
-  implicit val format: OFormat[CustomsServiceStatusWithDesc] = Json.format[CustomsServiceStatusWithDesc]
+case class Services(services: List[CustomsServiceStatus])
 
-  def apply(serviceStatuses: List[CustomsServiceStatus], serviceFromConfig: ServiceFromConfig): CustomsServiceStatusWithDesc = {
-
-    val status: Status = serviceStatuses.find(_.name.equalsIgnoreCase(serviceFromConfig.name)) match {
-      case None                => Status(Some("UNKNOWN"), None)
-      case Some(serviceStatus) => serviceStatus.status
-    }
-    CustomsServiceStatusWithDesc(serviceFromConfig.name, status, serviceFromConfig.description)
-  }
-}
 object Services {
   implicit val format: OFormat[Services] = Json.format[Services]
 }

@@ -25,4 +25,6 @@ lazy val microservice = Project("customs-service-status", file("."))
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
 
+addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt")
+addCommandAlias("verify", ";reload;format;test")
 evictionErrorLevel := Level.Warn

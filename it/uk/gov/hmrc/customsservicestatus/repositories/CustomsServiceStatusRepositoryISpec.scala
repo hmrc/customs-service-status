@@ -18,7 +18,10 @@ package uk.gov.hmrc.customsservicestatus.repositories
 
 import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes => testRoutes}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.models.State
+import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.State.AVAILABLE
+
+import java.time.Instant
 
 class CustomsServiceStatusRepositoryISpec extends BaseISpec {
 
@@ -33,12 +36,13 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
 
   "updateServiceStatus" should {
     "update the service with given status and lastUpdated" in {
-      val service = "myService"
-      inside(await(customsServiceStatusRepository.updateServiceStatus(service, State.AVAILABLE))) {
+      val name  = "Haulier"
+      val state = AVAILABLE
+      inside(await(customsServiceStatusRepository.updateServiceStatus(CustomsServiceStatus(name, "description", Some(state), Some(Instant.now()))))) {
         case result =>
-          result.name               shouldBe service
-          result.status.state       shouldBe Some("AVAILABLE")
-          result.status.lastUpdated shouldBe defined
+          result.name        shouldBe name
+          result.state       shouldBe Some(state)
+          result.lastUpdated shouldBe defined
       }
     }
   }
@@ -49,9 +53,10 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
       result.size shouldBe 0
     }
     "return all the customsServiceStatus entries in the database" in {
-      val (service1, service2) = ("service1", "service2")
-      await(customsServiceStatusRepository.updateServiceStatus(service1, State.AVAILABLE))
-      await(customsServiceStatusRepository.updateServiceStatus(service2, State.AVAILABLE))
+      val (service1, service2) = ("Haulier1", "Haulier2")
+      val state                = AVAILABLE
+      await(customsServiceStatusRepository.updateServiceStatus(CustomsServiceStatus(service1, "description", Some(state), Some(Instant.now()))))
+      await(customsServiceStatusRepository.updateServiceStatus(CustomsServiceStatus(service2, "description", Some(state), Some(Instant.now()))))
       val result = await(customsServiceStatusRepository.findAll())
       result.size shouldBe 2
     }
