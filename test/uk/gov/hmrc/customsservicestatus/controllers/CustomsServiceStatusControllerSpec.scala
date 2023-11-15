@@ -39,29 +39,31 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
   "updateServiceStatus" should {
 
     "return NOT_FOUND if service is not configured" in {
-      val serviceName = "myService"
-      val state       = AVAILABLE
-      when(checkService.updateServiceStatus(serviceName, state)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
-      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson[State](state)))
+      val serviceId = "myService"
+      val state     = AVAILABLE
+      when(checkService.updateServiceStatus(serviceId, state)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson[State](state)))
       status(result)          shouldBe NOT_FOUND
-      contentAsString(result) shouldBe s"Service with name $serviceName not configured"
+      contentAsString(result) shouldBe s"Service with name $serviceId not configured"
     }
 
     "return BAD_REQUEST if invalid json state supplied" in {
-      val serviceName = "myService"
-      when(checkService.updateServiceStatus(serviceName, State.AVAILABLE))
+      val serviceId = "myService"
+      when(checkService.updateServiceStatus(serviceId, State.AVAILABLE))
         .thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
-      val result = controller.updateServiceStatus(serviceName)(FakeRequest().withBody(Json.toJson("OK")))
+      val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson("OK")))
       status(result)          shouldBe BAD_REQUEST
       contentAsString(result) shouldBe "invalid value: OK for State type"
     }
 
-    "return OK with with name and description in response if service can be found in config" in {
-      val service = "myService"
-      val state   = AVAILABLE
-      when(checkService.updateServiceStatus(service, state))
-        .thenReturn(EitherT.rightT[Future, CustomsServiceStatusError](CustomsServiceStatus(service, "description", Some(state), Some(Instant.now))))
-      val result = controller.updateServiceStatus(service)(FakeRequest().withBody(Json.toJson[State](state)))
+    "return OK with with id, name and description in response if service can be found in config" in {
+      val serviceId = "myService"
+      val state     = AVAILABLE
+      when(checkService.updateServiceStatus(serviceId, state))
+        .thenReturn(
+          EitherT.rightT[Future, CustomsServiceStatusError](CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now)))
+        )
+      val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson[State](state)))
       status(result) shouldBe OK
     }
   }

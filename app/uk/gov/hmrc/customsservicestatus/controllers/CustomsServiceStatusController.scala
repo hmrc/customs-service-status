@@ -31,13 +31,13 @@ class CustomsServiceStatusController @Inject()(customsServiceStatusService: Cust
   implicit ec:                                                              ExecutionContext)
     extends BaseCustomsServiceStatusController(cc) {
 
-  def updateServiceStatus(serviceName: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def updateServiceStatus(serviceId: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     validateJson[State] { state =>
       customsServiceStatusService
-        .updateServiceStatus(serviceName, state)
+        .updateServiceStatus(serviceId, state)
         .fold(
           {
-            case ServiceNotConfiguredError => NotFound(UnrecognisedServiceError(serviceName).message)
+            case ServiceNotConfiguredError => NotFound(UnrecognisedServiceError(serviceId).message)
           },
           _ => Ok
         )

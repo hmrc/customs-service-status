@@ -22,7 +22,7 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
 
-case class CustomsServiceStatus(name: String, description: String, state: Option[State], lastUpdated: Option[Instant])
+case class CustomsServiceStatus(id: String, name: String, description: String, state: Option[State], lastUpdated: Option[Instant])
 
 object CustomsServiceStatus {
 

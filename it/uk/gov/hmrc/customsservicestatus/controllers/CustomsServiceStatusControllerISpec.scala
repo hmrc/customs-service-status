@@ -39,14 +39,15 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       status(result) shouldBe OK
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size             shouldBe 1
-      servicesStatus.head.name        shouldBe "Haulier"
+      servicesStatus.head.id          shouldBe "haulier"
+      servicesStatus.head.name        shouldBe "GVMS Haulier"
       servicesStatus.head.state       shouldBe Some(UNKNOWN)
       servicesStatus.head.lastUpdated shouldBe None
     }
 
     "return Ok with one service in the response if it is configured and have a corresponding entry in the db" in {
       val insertEntry = callRoute(
-        fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("Haulier"))
+        fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier"))
           .withMethod("PUT")
           .withJsonBody(Json.toJson[State](AVAILABLE)))
       status(insertEntry) shouldBe OK
@@ -54,7 +55,8 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       status(result) shouldBe OK
       val servicesStatus = contentAsJson(result).as[models.Services].services
       servicesStatus.size                       shouldBe 1
-      servicesStatus.head.name                  shouldBe "Haulier"
+      servicesStatus.head.id                    shouldBe "haulier"
+      servicesStatus.head.name                  shouldBe "GVMS Haulier"
       servicesStatus.head.state                 shouldBe Some(AVAILABLE)
       servicesStatus.head.lastUpdated.isDefined shouldBe true
     }

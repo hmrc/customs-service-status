@@ -39,7 +39,7 @@ class CustomsServiceStatusRepository @Inject()(
       mongoComponent = mongo,
       domainFormat   = CustomsServiceStatus.mongoFormat,
       indexes = Seq(
-        IndexModel(ascending("name"), IndexOptions().sparse(true))
+        IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
       ),
       replaceIndexes = true
     ) {
@@ -48,7 +48,7 @@ class CustomsServiceStatusRepository @Inject()(
     Mdc.preservingMdc(
       collection
         .findOneAndReplace(
-          equal("name", customsServiceStatus.name.toBson()),
+          equal("id", customsServiceStatus.id.toBson()),
           customsServiceStatus,
           FindOneAndReplaceOptions()
             .returnDocument(ReturnDocument.AFTER)

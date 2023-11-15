@@ -33,16 +33,16 @@ class CustomsServiceStatusServiceSpec extends BaseSpec {
 
   "updateServiceStatus" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
-      val serviceName = "myService"
-      service.updateServiceStatus(serviceName, State.AVAILABLE).value.futureValue shouldBe Left(ServiceNotConfiguredError)
+      val serviceId = "myService"
+      service.updateServiceStatus(serviceId, State.AVAILABLE).value.futureValue shouldBe Left(ServiceNotConfiguredError)
     }
 
     "return Right with CustomsServiceStatus if service is configured" in {
-      val serviceName          = "Haulier" //this is configured in application.conf
+      val serviceId            = "haulier" //this is configured in application.conf
       val state                = AVAILABLE
-      val customsServiceStatus = CustomsServiceStatus(serviceName, "description", Some(state), Some(Instant.now))
+      val customsServiceStatus = CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now))
       when(repo.updateServiceStatus(any())).thenReturn(Future.successful(customsServiceStatus))
-      service.updateServiceStatus(serviceName, state).value.futureValue shouldBe Right(customsServiceStatus)
+      service.updateServiceStatus(serviceId, state).value.futureValue shouldBe Right(customsServiceStatus)
     }
   }
 }
