@@ -39,14 +39,14 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
 
   private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
 
-  def updateServiceStatus(serviceName: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
-    val configuredService = knownServices.services.find(_.name == serviceName)
+  def updateServiceStatus(serviceId: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
+    val configuredService = knownServices.services.find(_.id == serviceId)
     configuredService match {
       case Some(service) =>
-        val toUpdate = CustomsServiceStatus(serviceName, service.description, Some(state), Some(Instant.now()))
+        val toUpdate = CustomsServiceStatus(serviceId, service.name, service.description, Some(state), Some(Instant.now()))
         EitherT.right[CustomsServiceStatusError](customsServiceStatusRepository.updateServiceStatus(toUpdate))
       case None =>
-        logger.warn(s"Service with name $serviceName not configured")
+        logger.warn(s"Service with id $serviceId not configured")
         EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError)
     }
   }
@@ -57,7 +57,7 @@ class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: Cust
         val matchedService = servicesFromDB.find(_.name == configuredService.name)
         val state          = matchedService.flatMap(_.state).orElse(Some(UNKNOWN))
         val lastUpdated    = matchedService.flatMap(_.lastUpdated)
-        CustomsServiceStatus(configuredService.name, configuredService.description, state, lastUpdated)
+        CustomsServiceStatus(configuredService.id, configuredService.name, configuredService.description, state, lastUpdated)
       }
 
       Services(services)
