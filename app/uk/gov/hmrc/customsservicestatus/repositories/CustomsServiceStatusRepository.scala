@@ -20,12 +20,14 @@ import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala._
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
+import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
 
+import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,13 +35,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CustomsServiceStatusRepository @Inject()(
   mongo:                     MongoComponent
-)(implicit executionContext: ExecutionContext)
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends PlayMongoRepository[CustomsServiceStatus](
       collectionName = "customs-service-status",
       mongoComponent = mongo,
       domainFormat   = CustomsServiceStatus.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
+        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx").expireAfter(appConfig.expireAfterSeconds, SECONDS)),
       ),
       replaceIndexes = true
     ) {
