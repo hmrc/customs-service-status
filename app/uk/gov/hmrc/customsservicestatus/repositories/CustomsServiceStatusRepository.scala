@@ -17,16 +17,23 @@
 package uk.gov.hmrc.customsservicestatus.repositories
 
 import com.mongodb.client.model.Indexes.ascending
+import com.mongodb.client.model.ReturnDocument.AFTER
+import com.mongodb.client.model.Updates.set
+import org.bson.BsonValue
 import org.mongodb.scala._
+import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
+import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.instantWrites
 import uk.gov.hmrc.play.http.logging.Mdc
 
+import java.time.Instant
 import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,18 +54,38 @@ class CustomsServiceStatusRepository @Inject()(
       replaceIndexes = true
     ) {
 
+  private def findOneAndUpdateOptions = FindOneAndUpdateOptions().returnDocument(AFTER).upsert(true)
+
   def updateServiceStatus(customsServiceStatus: CustomsServiceStatus): Future[CustomsServiceStatus] =
     Mdc.preservingMdc(
       collection
-        .findOneAndReplace(
+        .findOneAndUpdate(
           equal("id", customsServiceStatus.id.toBson()),
-          customsServiceStatus,
-          FindOneAndReplaceOptions()
-            .returnDocument(ReturnDocument.AFTER)
-            .upsert(true)
+          Seq(
+            set("lastUpdated", BsonDateTime(customsServiceStatus.lastUpdated.getOrElse(Instant.now()).toEpochMilli)),
+            set("stateChangedAt", stateChangedAtBson(customsServiceStatus)),
+            set("state", customsServiceStatus.state.toBson()),
+            set("name", customsServiceStatus.name.toBson()),
+            set("description", customsServiceStatus.description.toBson()),
+          ),
+          findOneAndUpdateOptions
         )
         .toFuture()
     )
+
+  private def stateChangedAtBson(customsServiceStatus: CustomsServiceStatus): BsonValue = {
+    val newValue = instantWrites.writes(customsServiceStatus.stateChangedAt.getOrElse(Instant.now()))
+    Json
+      .obj(
+        "$cond" -> Json.obj(
+          "if"   -> Json.obj("$ne" -> Json.arr("$state", JsString(customsServiceStatus.state.map(_.value).getOrElse("")))),
+          "then" -> newValue,
+          "else" ->
+            Json.obj("$ifNull" -> Json.arr("$stateChangedAt", newValue))
+        )
+      )
+      .toBson()
+  }
 
   def findAll(): Future[List[CustomsServiceStatus]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
 }
