@@ -73,6 +73,8 @@ class CustomsServiceStatusRepository @Inject()(
         .toFuture()
     )
 
+  // update 'stateChangedAt' only when the 'state' has changed
+  // but stores a new value if the field doesn't exists in the record already
   private def stateChangedAtBson(customsServiceStatus: CustomsServiceStatus): BsonValue = {
     val newValue = instantWrites.writes(customsServiceStatus.stateChangedAt.getOrElse(Instant.now()))
     Json
