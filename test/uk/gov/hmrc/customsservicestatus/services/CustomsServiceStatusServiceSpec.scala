@@ -40,7 +40,7 @@ class CustomsServiceStatusServiceSpec extends BaseSpec {
     "return Right with CustomsServiceStatus if service is configured" in {
       val serviceId            = "haulier" //this is configured in application.conf
       val state                = AVAILABLE
-      val customsServiceStatus = CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now))
+      val customsServiceStatus = CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now), Some(Instant.now))
       when(repo.updateServiceStatus(any())).thenReturn(Future.successful(customsServiceStatus))
       service.updateServiceStatus(serviceId, state).value.futureValue shouldBe Right(customsServiceStatus)
     }
