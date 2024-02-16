@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.customsservicestatus.helpers
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -75,7 +75,6 @@ abstract class BaseISpec
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
-      .disable[com.kenshoo.play.metrics.PlayModule]
       .configure(additionalAppConfig)
       .in(Mode.Test)
       .build()
