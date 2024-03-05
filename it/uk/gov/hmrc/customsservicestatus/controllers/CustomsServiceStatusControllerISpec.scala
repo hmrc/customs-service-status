@@ -49,7 +49,8 @@ class CustomsServiceStatusControllerISpec extends BaseISpec {
       val insertEntry = callRoute(
         fakeRequest(routes.CustomsServiceStatusController.updateServiceStatus("haulier"))
           .withMethod("PUT")
-          .withJsonBody(Json.toJson[State](AVAILABLE)))
+          .withJsonBody(Json.toJson[State](AVAILABLE))
+      )
       status(insertEntry) shouldBe OK
       val result = callRoute(fakeRequest(routes.CustomsServiceStatusController.list()))
       status(result) shouldBe OK

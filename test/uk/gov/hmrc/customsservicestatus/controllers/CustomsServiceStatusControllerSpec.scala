@@ -62,7 +62,8 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
       when(checkService.updateServiceStatus(serviceId, state))
         .thenReturn(
           EitherT.rightT[Future, CustomsServiceStatusError](
-            CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now), Some(Instant.now)))
+            CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now), Some(Instant.now))
+          )
         )
       val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson[State](state)))
       status(result) shouldBe OK

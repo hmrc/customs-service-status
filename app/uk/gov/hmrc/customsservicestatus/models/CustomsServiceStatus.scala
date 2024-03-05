@@ -28,7 +28,8 @@ case class CustomsServiceStatus(
   description:    String,
   state:          Option[State],
   stateChangedAt: Option[Instant],
-  lastUpdated:    Option[Instant])
+  lastUpdated:    Option[Instant]
+)
 
 object CustomsServiceStatus {
 

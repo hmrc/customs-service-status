@@ -27,17 +27,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton()
-class CustomsServiceStatusController @Inject()(customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(
-  implicit ec:                                                              ExecutionContext)
-    extends BaseCustomsServiceStatusController(cc) {
+class CustomsServiceStatusController @Inject() (customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(implicit
+  ec: ExecutionContext
+) extends BaseCustomsServiceStatusController(cc) {
 
   def updateServiceStatus(serviceId: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     validateJson[State] { state =>
       customsServiceStatusService
         .updateServiceStatus(serviceId, state)
         .fold(
-          {
-            case ServiceNotConfiguredError => NotFound(UnrecognisedServiceError(serviceId).message)
+          { case ServiceNotConfiguredError =>
+            NotFound(UnrecognisedServiceError(serviceId).message)
           },
           _ => Ok
         )
