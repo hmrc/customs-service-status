@@ -40,16 +40,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
-class CustomsServiceStatusRepository @Inject()(
-  mongo:                     MongoComponent
+class CustomsServiceStatusRepository @Inject() (
+  mongo: MongoComponent
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends PlayMongoRepository[CustomsServiceStatus](
       collectionName = "customs-service-status",
       mongoComponent = mongo,
-      domainFormat   = CustomsServiceStatus.mongoFormat,
+      domainFormat = CustomsServiceStatus.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
-        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx").expireAfter(appConfig.expireAfterSeconds, SECONDS)),
+        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx").expireAfter(appConfig.expireAfterSeconds, SECONDS))
       ),
       replaceIndexes = true
     ) {
@@ -66,7 +66,7 @@ class CustomsServiceStatusRepository @Inject()(
             set("stateChangedAt", stateChangedAtBson(customsServiceStatus)),
             set("state", customsServiceStatus.state.toBson()),
             set("name", customsServiceStatus.name.toBson()),
-            set("description", customsServiceStatus.description.toBson()),
+            set("description", customsServiceStatus.description.toBson())
           ),
           findOneAndUpdateOptions
         )

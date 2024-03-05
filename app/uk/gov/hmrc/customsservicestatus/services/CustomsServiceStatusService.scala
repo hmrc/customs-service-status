@@ -33,9 +33,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CustomsServiceStatusService @Inject()(customsServiceStatusRepository: CustomsServiceStatusRepository)(
-  implicit val executionContext:                                            ExecutionContext)
-    extends Logging {
+class CustomsServiceStatusService @Inject() (customsServiceStatusRepository: CustomsServiceStatusRepository)(implicit
+  val executionContext: ExecutionContext
+) extends Logging {
 
   private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
 

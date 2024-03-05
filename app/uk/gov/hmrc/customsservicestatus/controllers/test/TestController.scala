@@ -24,10 +24,10 @@ import uk.gov.hmrc.customsservicestatus.controllers.BaseCustomsServiceStatusCont
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestController @Inject()(
+class TestController @Inject() (
   defaultActionBuilder: DefaultActionBuilder,
   testService:          TestService
-)(implicit val ec:      ExecutionContext, cc: ControllerComponents)
+)(implicit val ec: ExecutionContext, cc: ControllerComponents)
     extends BaseCustomsServiceStatusController(cc) {
 
   def clearAllData: Action[AnyContent] = defaultActionBuilder.async {
@@ -37,7 +37,7 @@ class TestController @Inject()(
     }
   }
 
-  private def withRecover(f: => Future[Result]): Future[Result] = f.recover {
-    case e: Exception => InternalServerError("Failure with message: " + e.toString)
+  private def withRecover(f: => Future[Result]): Future[Result] = f.recover { case e: Exception =>
+    InternalServerError("Failure with message: " + e.toString)
   }
 }

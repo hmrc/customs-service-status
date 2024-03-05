@@ -23,9 +23,9 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestService @Inject()(
+class TestService @Inject() (
   customsServiceStatusRepository: CustomsServiceStatusRepository
-)(implicit ec:                    ExecutionContext) {
+)(implicit ec: ExecutionContext) {
 
   def clearAllData: Future[Unit] =
     for {

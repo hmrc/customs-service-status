@@ -40,12 +40,15 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
       val serviceId = "Haulier"
       val state     = AVAILABLE
       inside(
-        await(customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))))) {
-        case result =>
-          result.id          shouldBe serviceId
-          result.state       shouldBe Some(state)
-          result.lastUpdated shouldBe defined
+        await(
+          customsServiceStatusRepository.updateServiceStatus(
+            CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))
+          )
+        )
+      ) { case result =>
+        result.id          shouldBe serviceId
+        result.state       shouldBe Some(state)
+        result.lastUpdated shouldBe defined
       }
     }
 
@@ -56,11 +59,14 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
       val after5Seconds = now.plusSeconds(5)
 
       await(
-        customsServiceStatusRepository.updateServiceStatus(CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(now), Some(now))))
+        customsServiceStatusRepository.updateServiceStatus(CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(now), Some(now)))
+      )
 
       val updatedRecord = await(
         customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(after5Seconds), Some(after5Seconds))))
+          CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(after5Seconds), Some(after5Seconds))
+        )
+      )
 
       updatedRecord.stateChangedAt shouldBe Some(now.truncatedTo(MILLIS))
     }
@@ -72,11 +78,15 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
 
       await(
         customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(serviceId, "name", "description", Some(AVAILABLE), Some(now), Some(now))))
+          CustomsServiceStatus(serviceId, "name", "description", Some(AVAILABLE), Some(now), Some(now))
+        )
+      )
 
       val updatedRecord = await(
         customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(serviceId, "name", "description", Some(UNAVAILABLE), Some(after5Seconds), Some(after5Seconds))))
+          CustomsServiceStatus(serviceId, "name", "description", Some(UNAVAILABLE), Some(after5Seconds), Some(after5Seconds))
+        )
+      )
 
       updatedRecord.stateChangedAt shouldBe Some(after5Seconds.truncatedTo(MILLIS))
     }
@@ -93,10 +103,14 @@ class CustomsServiceStatusRepositoryISpec extends BaseISpec {
       val state                    = AVAILABLE
       await(
         customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(service1Id, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))))
+          CustomsServiceStatus(service1Id, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))
+        )
+      )
       await(
         customsServiceStatusRepository.updateServiceStatus(
-          CustomsServiceStatus(service2Id, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))))
+          CustomsServiceStatus(service2Id, "name", "description", Some(state), Some(Instant.now()), Some(Instant.now()))
+        )
+      )
       val result = await(customsServiceStatusRepository.findAll())
       result.size shouldBe 2
     }
