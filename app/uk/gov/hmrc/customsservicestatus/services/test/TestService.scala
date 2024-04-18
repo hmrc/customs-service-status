@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customservicestatus.services.test
+package uk.gov.hmrc.customsservicestatus.services.test
 
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.play.http.logging.Mdc
@@ -30,6 +30,6 @@ class TestService @Inject() (
   def clearAllData: Future[Unit] =
     for {
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
-      _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes)
+      _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes())
     } yield ()
 }

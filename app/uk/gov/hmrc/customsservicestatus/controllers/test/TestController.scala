@@ -18,8 +18,8 @@ package uk.gov.hmrc.customsservicestatus.controllers.test
 
 import com.google.inject._
 import play.api.mvc._
-import uk.gov.hmrc.customservicestatus.services.test.TestService
 import uk.gov.hmrc.customsservicestatus.controllers.BaseCustomsServiceStatusController
+import uk.gov.hmrc.customsservicestatus.services.test.TestService
 
 import scala.concurrent.{ExecutionContext, Future}
 
