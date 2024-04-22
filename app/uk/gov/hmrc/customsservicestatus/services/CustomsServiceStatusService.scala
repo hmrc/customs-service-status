@@ -30,6 +30,7 @@ import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusReposit
 
 import java.time.Instant
 import javax.inject.Inject
+import scala.annotation.nowarn
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -37,6 +38,7 @@ class CustomsServiceStatusService @Inject() (customsServiceStatusRepository: Cus
   val executionContext: ExecutionContext
 ) extends Logging {
 
+  @nowarn
   private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
 
   def updateServiceStatus(serviceId: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {

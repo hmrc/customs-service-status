@@ -63,7 +63,7 @@ abstract class BaseISpec
   implicit lazy val materializer: Materializer     = Materializer(system)
   implicit def ec:                ExecutionContext = global
 
-  val additionalAppConfig = Map(
+  val additionalAppConfig: Map[String, Any] = Map(
     "mongodb.uri"      -> "mongodb://localhost:27017/customs-service-status-test",
     "metrics.enabled"  -> false,
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
