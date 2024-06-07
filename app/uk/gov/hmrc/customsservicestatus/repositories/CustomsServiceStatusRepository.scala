@@ -49,7 +49,7 @@ class CustomsServiceStatusRepository @Inject() (
       domainFormat = CustomsServiceStatus.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
-        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx").expireAfter(appConfig.expireAfterSeconds, SECONDS))
+        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx"))
       ),
       replaceIndexes = true
     ) {
