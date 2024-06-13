@@ -25,7 +25,6 @@ import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model._
 import play.api.libs.json.{JsString, Json}
-import uk.gov.hmrc.customsservicestatus.config.AppConfig
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs._
@@ -42,14 +41,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CustomsServiceStatusRepository @Inject() (
   mongo: MongoComponent
-)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+)(implicit executionContext: ExecutionContext)
     extends PlayMongoRepository[CustomsServiceStatus](
       collectionName = "customs-service-status",
       mongoComponent = mongo,
       domainFormat = CustomsServiceStatus.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
-        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx").expireAfter(appConfig.expireAfterSeconds, SECONDS))
+        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx"))
       ),
       replaceIndexes = true
     ) {
