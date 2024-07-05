@@ -25,7 +25,10 @@ lazy val microservice = Project("customs-service-status", file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
+  .settings(
+    addCommandAlias("runTestOnly", "run -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes"),
+    addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt"),
+    addCommandAlias("verify", ";reload;format;test")
+  )
 
-addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt")
-addCommandAlias("verify", ";reload;format;test")
 evictionErrorLevel := Level.Warn
