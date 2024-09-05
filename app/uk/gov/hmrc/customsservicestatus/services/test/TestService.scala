@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.services.test
 
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.play.http.logging.Mdc
+import org.mongodb.scala.SingleObservableFuture
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

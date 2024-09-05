@@ -19,27 +19,24 @@ package uk.gov.hmrc.customsservicestatus.services
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.Singleton
-import play.api.Logging
-import pureconfig.ConfigSource
-import pureconfig.generic.auto._
+import play.api.{Configuration, Logging}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.models.State.UNKNOWN
 import uk.gov.hmrc.customsservicestatus.models._
+import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus._
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import java.time.Instant
 import javax.inject.Inject
-import scala.annotation.nowarn
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CustomsServiceStatusService @Inject() (customsServiceStatusRepository: CustomsServiceStatusRepository)(implicit
+class CustomsServiceStatusService @Inject() (val config: Configuration, customsServiceStatusRepository: CustomsServiceStatusRepository)(implicit
   val executionContext: ExecutionContext
 ) extends Logging {
 
-  @nowarn
-  private val knownServices: Services = ConfigSource.default.loadOrThrow[Services]
+  private val knownServices: Services = Services(config.get[List[CustomsServiceStatus]]("services"))
 
   def updateServiceStatus(serviceId: String, state: State): EitherT[Future, CustomsServiceStatusError, CustomsServiceStatus] = {
     val configuredService = knownServices.services.find(_.id == serviceId)

@@ -33,7 +33,6 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.instantWrites
 import uk.gov.hmrc.play.http.logging.Mdc
 
 import java.time.Instant
-import java.util.concurrent.TimeUnit.SECONDS
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -59,13 +58,13 @@ class CustomsServiceStatusRepository @Inject() (
     Mdc.preservingMdc(
       collection
         .findOneAndUpdate(
-          equal("id", customsServiceStatus.id.toBson()),
+          equal("id", customsServiceStatus.id.toBson),
           Seq(
             set("lastUpdated", BsonDateTime(customsServiceStatus.lastUpdated.getOrElse(Instant.now()).toEpochMilli)),
             set("stateChangedAt", stateChangedAtBson(customsServiceStatus)),
-            set("state", customsServiceStatus.state.toBson()),
-            set("name", customsServiceStatus.name.toBson()),
-            set("description", customsServiceStatus.description.toBson())
+            set("state", customsServiceStatus.state.toBson),
+            set("name", customsServiceStatus.name.toBson),
+            set("description", customsServiceStatus.description.toBson)
           ),
           findOneAndUpdateOptions
         )
@@ -85,7 +84,7 @@ class CustomsServiceStatusRepository @Inject() (
             Json.obj("$ifNull" -> Json.arr("$stateChangedAt", newValue))
         )
       )
-      .toBson()
+      .toBson
   }
 
   def findAll(): Future[List[CustomsServiceStatus]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)

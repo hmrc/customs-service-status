@@ -7,7 +7,7 @@ lazy val microservice = Project("customs-service-status", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.4.2",
     ScoverageKeys.coverageExcludedFiles :=
       "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;" +
         "app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*",
@@ -15,10 +15,6 @@ lazy val microservice = Project("customs-service-status", file("."))
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.17.4",
-    // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
-    // suppress warnings in generated routes files
-    scalacOptions += "-Wconf:src=routes/.*:s",
     playDefaultPort := 8991,
     scalafmtOnCompile := true
   )
