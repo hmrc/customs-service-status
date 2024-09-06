@@ -17,7 +17,7 @@ lazy val microservice = Project("customs-service-status", file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     playDefaultPort := 8991,
     scalafmtOnCompile := true,
-    scalacOptions ++= Seq("-Wconf:src=routes/.*:s", "-coverage-exclude-files:packages_to_be_excluded")
+    scalacOptions ++= Seq("-Wconf:src=routes/.*:s", "-coverage-exclude-files:app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*")
   )
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
