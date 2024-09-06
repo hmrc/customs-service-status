@@ -7,7 +7,7 @@ lazy val microservice = Project("customs-service-status", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.4.2",
     ScoverageKeys.coverageExcludedFiles :=
       "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;" +
         "app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*",
