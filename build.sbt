@@ -14,10 +14,13 @@ lazy val microservice = Project("customs-service-status", file("."))
     ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
+    ScoverageKeys.coverageEnabled := true,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    // https://www.scala-lang.org/2021/01/12/configuring-and-suppressing-warnings.html
+    // suppress warnings in generated routes files
+    scalacOptions += "-Wconf:src=routes/.*:s",
     playDefaultPort := 8991,
-    scalafmtOnCompile := true,
-    scalacOptions ++= Seq("-Wconf:src=routes/.*:s", "-coverage-exclude-files:app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*")
+    scalafmtOnCompile := true
   )
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
