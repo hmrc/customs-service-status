@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.models
 
+import play.api.ConfigLoader
 import play.api.libs.json.Json.WithDefaultValues
 import play.api.libs.json._
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -32,6 +33,7 @@ case class CustomsServiceStatus(
 )
 
 object CustomsServiceStatus {
+  import scala.jdk.CollectionConverters.ListHasAsScala
 
   val mongoFormat: OFormat[CustomsServiceStatus] = {
     implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
@@ -39,6 +41,15 @@ object CustomsServiceStatus {
   }
 
   implicit val format: OFormat[CustomsServiceStatus] = Json.using[WithDefaultValues].format[CustomsServiceStatus]
+
+  implicit lazy val configLoader: ConfigLoader[List[CustomsServiceStatus]] = ConfigLoader(_.getConfigList).map(
+    _.asScala.toList.map { config =>
+      val id          = config.getString("id")
+      val name        = config.getString("name")
+      val description = config.getString("description")
+      CustomsServiceStatus(id, name, description, None, None, None)
+    }
+  )
 }
 
 case class Services(services: List[CustomsServiceStatus])

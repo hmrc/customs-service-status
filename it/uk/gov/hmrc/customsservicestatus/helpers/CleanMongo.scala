@@ -17,6 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.helpers
 
 import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.SingleObservableFuture
 import org.scalatest.{BeforeAndAfterAll, TestSuite}
 import org.scalatestplus.play.BaseOneAppPerSuite
 import play.api.inject.ApplicationLifecycle

@@ -45,6 +45,6 @@ class CustomsServiceStatusController @Inject() (customsServiceStatusService: Cus
   }
 
   def list(): Action[AnyContent] = Action.async { _ =>
-    customsServiceStatusService.listAll map (result => Ok(Json.toJson(result)))
+    customsServiceStatusService.listAll.map(result => Ok(Json.toJson(result)))
   }
 }
