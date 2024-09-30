@@ -36,7 +36,6 @@ import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @Singleton
 class CustomsServiceStatusRepository @Inject() (
   mongo: MongoComponent
