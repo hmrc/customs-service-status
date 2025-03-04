@@ -29,5 +29,8 @@ lazy val microservice = Project("customs-service-status", file("."))
     addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt"),
     addCommandAlias("verify", ";reload;format;test")
   )
+  .settings(
+    scalacOptions += "-no-indent"
+  )
 
 evictionErrorLevel := Level.Warn
