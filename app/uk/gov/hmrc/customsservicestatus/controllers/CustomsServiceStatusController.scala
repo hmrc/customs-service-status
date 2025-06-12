@@ -24,7 +24,7 @@ import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
 class CustomsServiceStatusController @Inject() (customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(implicit
@@ -43,6 +43,12 @@ class CustomsServiceStatusController @Inject() (customsServiceStatusService: Cus
         )
     }
   }
+
+  def updateWithUnplannedOutage(internalReference: String, details: String): Action[AnyContent] =
+    Action.async { implicit request => 
+      println(s"FLAG 1: intref = $internalReference details = $details")
+      Future.successful(Ok)
+    }
 
   def list(): Action[AnyContent] = Action.async { _ =>
     customsServiceStatusService.listAll.map(result => Ok(Json.toJson(result)))
