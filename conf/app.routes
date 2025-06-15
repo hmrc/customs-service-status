@@ -2,4 +2,4 @@
 
 PUT         /services/:id/status                                  uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.updateServiceStatus(id: String)
 GET         /services                                             uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.list()
-POST        /services/messages/:internalReference/:details        uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.updateWithUnplannedOutage(internalReference: String, details: String)
+POST        /services/messages/:internalReference/:details/:lastUpdated        uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.updateWithUnplannedOutage(internalReference: String, details: String, lastUpdated: String, notesForClsUsers: Option[String])

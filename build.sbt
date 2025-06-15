@@ -1,7 +1,7 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
-import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.{integrationTestSettings, scalaSettings}
 import sbt.Keys.evictionErrorLevel
+import scoverage.ScoverageKeys
+import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val microservice = Project("customs-service-status", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)

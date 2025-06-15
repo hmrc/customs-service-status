@@ -21,30 +21,37 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.UnrecognisedServiceError
 import uk.gov.hmrc.customsservicestatus.models.State
-import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
+import uk.gov.hmrc.customsservicestatus.services.AdminCustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class CustomsServiceStatusController @Inject() (customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(implicit
-  ec: ExecutionContext
+class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsServiceStatusService, cc: ControllerComponents)(
+  implicit ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
 
-  def updateServiceStatus(serviceId: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    validateJson[State] { state =>
-      customsServiceStatusService
-        .updateServiceStatus(serviceId, state)
-        .fold(
-          { case ServiceNotConfiguredError =>
-            NotFound(UnrecognisedServiceError(serviceId).message)
-          },
-          _ => Ok
+  def updateWithUnplannedOutage(
+    internalReference: String,
+    details:           String,
+    lastUpdated:       String,
+    notesForClsUsers:  Option[String]
+  ): Action[AnyContent] =
+    Action.async { implicit request =>
+      adminCustomsServiceStatusService
+        .submitUnplannedOutage(
+          internalReference,
+          details,
+          notesForClsUsers,
+          lastUpdated
         )
+        .map {
+          case Some(err) => BadRequest
+          case None      => Ok
+        }
     }
-  }
 
   def list(): Action[AnyContent] = Action.async { _ =>
-    customsServiceStatusService.listAll.map(result => Ok(Json.toJson(result)))
+    adminCustomsServiceStatusService.listAll.map(result => Ok(Json.toJson(result)))
   }
 }
