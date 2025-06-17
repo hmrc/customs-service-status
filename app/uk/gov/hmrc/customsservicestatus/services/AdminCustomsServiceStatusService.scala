@@ -40,14 +40,16 @@ class AdminCustomsServiceStatusService @Inject() (
 ) {
 
   def submitUnplannedOutage(
-    internalReference: String,
-    additionalNotes:   String,
-    notesForClsUsers:  Option[String],
-    lastUpdated:       String
+    unplannedOutageRequestData: UnplannedOutageRequestData
   ): Future[Option[AdminCustomsServiceStatusError]] =
     adminCustomsServiceStatusRepository
       .submitUnplannedOutage(
-        AdminCustomsServiceStatus(internalReference, additionalNotes, notesForClsUsers, lastUpdated)
+        AdminCustomsServiceStatus(
+          unplannedOutageRequestData.internalReference,
+          unplannedOutageRequestData.additionalDetails,
+          unplannedOutageRequestData.lastUpdated,
+          unplannedOutageRequestData.notesForClsUsers
+        )
       )
       .map {
         case insert if insert.wasAcknowledged() => None

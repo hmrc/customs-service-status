@@ -20,7 +20,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.ErrorResponse.UnrecognisedServiceError
-import uk.gov.hmrc.customsservicestatus.models.State
+import uk.gov.hmrc.customsservicestatus.models.{State, UnplannedOutageRequestData}
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
@@ -31,24 +31,16 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
   implicit ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
 
-  def updateWithUnplannedOutage(
-    internalReference: String,
-    details:           String,
-    lastUpdated:       String,
-    notesForClsUsers:  Option[String]
-  ): Action[AnyContent] =
-    Action.async { implicit request =>
-      adminCustomsServiceStatusService
-        .submitUnplannedOutage(
-          internalReference,
-          details,
-          notesForClsUsers,
-          lastUpdated
-        )
-        .map {
-          case Some(err) => BadRequest
-          case None      => Ok
-        }
+  def updateWithUnplannedOutage(): Action[JsValue] =
+    Action.async(parse.json) { implicit request =>
+      validateJson[UnplannedOutageRequestData] { unplannedOutageData =>
+        adminCustomsServiceStatusService
+          .submitUnplannedOutage(unplannedOutageData)
+          .map {
+            case Some(error) => BadRequest
+            case None        => Ok
+          }
+      }
     }
 
   def list(): Action[AnyContent] = Action.async { _ =>
