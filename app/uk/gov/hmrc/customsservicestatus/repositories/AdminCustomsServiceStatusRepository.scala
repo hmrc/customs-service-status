@@ -17,24 +17,13 @@
 package uk.gov.hmrc.customsservicestatus.repositories
 
 import com.mongodb.client.model.Indexes.ascending
-import com.mongodb.client.model.ReturnDocument.AFTER
-import com.mongodb.client.model.Updates.set
-import org.bson.BsonValue
 import org.mongodb.scala.*
-import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters.*
-import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.customsservicestatus.models.AdminCustomsServiceStatus
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError.*
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.Codecs.*
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.instantWrites
 import uk.gov.hmrc.play.http.logging.Mdc
 
-import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -25,7 +25,7 @@ import java.time.Instant
 
 case class AdminCustomsServiceStatus(
   internalReference: InternalReference,
-  additionalDetails: Details,
+  additionalDetails: Preview,
   lastUpdated:       Instant,
   notesForClsUsers:  Option[String]
 )

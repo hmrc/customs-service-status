@@ -16,18 +16,13 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
-import cats.data.{EitherT, NonEmptyMap}
-import cats.implicits.*
 import com.google.inject.Singleton
-import play.api.{Configuration, Logging}
+import play.api.Configuration
+import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError.*
-import uk.gov.hmrc.customsservicestatus.errorhandlers.{AdminCustomsServiceStatusError, CustomsServiceStatusError}
 import uk.gov.hmrc.customsservicestatus.models.*
-import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus.*
-import uk.gov.hmrc.customsservicestatus.models.State.UNKNOWN
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
-import java.time.Instant
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
