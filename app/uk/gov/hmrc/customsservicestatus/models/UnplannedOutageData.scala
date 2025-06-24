@@ -23,20 +23,20 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.Instant
 
-case class AdminCustomsServiceStatus(
+case class UnplannedOutageData(
   internalReference: InternalReference,
   additionalDetails: Preview,
   lastUpdated:       Instant,
   notesForClsUsers:  Option[String]
 )
 
-object AdminCustomsServiceStatus {
+object UnplannedOutageData {
 
-  val mongoFormat: OFormat[AdminCustomsServiceStatus] = {
+  val mongoFormat: OFormat[UnplannedOutageData] = {
     implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-    Json.using[WithDefaultValues].format[AdminCustomsServiceStatus]
+    Json.using[WithDefaultValues].format[UnplannedOutageData]
   }
 
-  implicit val format: OFormat[AdminCustomsServiceStatus] =
-    Json.using[WithDefaultValues].format[AdminCustomsServiceStatus]
+  implicit val format: OFormat[UnplannedOutageData] =
+    Json.using[WithDefaultValues].format[UnplannedOutageData]
 }

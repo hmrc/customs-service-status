@@ -19,7 +19,7 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.model.*
-import uk.gov.hmrc.customsservicestatus.models.AdminCustomsServiceStatus
+import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
@@ -31,10 +31,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class AdminCustomsServiceStatusRepository @Inject() (
   mongo: MongoComponent
 )(implicit executionContext: ExecutionContext)
-    extends PlayMongoRepository[AdminCustomsServiceStatus](
+    extends PlayMongoRepository[UnplannedOutageData](
       collectionName = "admin-customs-service-status",
       mongoComponent = mongo,
-      domainFormat = AdminCustomsServiceStatus.mongoFormat,
+      domainFormat = UnplannedOutageData.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
         IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx"))
@@ -42,12 +42,12 @@ class AdminCustomsServiceStatusRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  def submitUnplannedOutage(adminCustomsServiceStatus: AdminCustomsServiceStatus): Future[result.InsertOneResult] =
+  def submitUnplannedOutage(adminCustomsServiceStatus: UnplannedOutageData): Future[result.InsertOneResult] =
     Mdc.preservingMdc(
       collection
         .insertOne(adminCustomsServiceStatus)
         .toFuture()
     )
 
-  def findAll(): Future[List[AdminCustomsServiceStatus]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
+  def findAll(): Future[List[UnplannedOutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
 }

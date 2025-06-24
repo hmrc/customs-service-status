@@ -39,7 +39,7 @@ class AdminCustomsStatusService @Inject() (
   ): Future[Option[AdminCustomsServiceStatusError]] =
     adminCustomsServiceStatusRepository
       .submitUnplannedOutage(
-        AdminCustomsServiceStatus(
+        UnplannedOutageData(
           unplannedOutageRequestData.internalReference,
           unplannedOutageRequestData.additionalDetails,
           unplannedOutageRequestData.lastUpdated,
@@ -51,6 +51,6 @@ class AdminCustomsStatusService @Inject() (
         case _                                  => Some(GenericError)
       }
 
-  def listAll: Future[List[AdminCustomsServiceStatus]] =
+  def listAll: Future[List[UnplannedOutageData]] =
     adminCustomsServiceStatusRepository.findAll()
 }
