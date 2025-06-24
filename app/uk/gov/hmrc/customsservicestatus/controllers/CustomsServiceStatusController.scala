@@ -24,7 +24,7 @@ import uk.gov.hmrc.customsservicestatus.models.State
 import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class CustomsServiceStatusController @Inject() (customsServiceStatusService: CustomsServiceStatusService, cc: ControllerComponents)(implicit
