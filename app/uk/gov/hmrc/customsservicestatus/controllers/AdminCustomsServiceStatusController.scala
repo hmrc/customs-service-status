@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageRequestData
+import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
 
   def updateWithUnplannedOutage(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
-      validateJson[UnplannedOutageRequestData] { unplannedOutageData =>
+      validateJson[UnplannedOutageData] { unplannedOutageData =>
         adminCustomsServiceStatusService
           .submitUnplannedOutage(unplannedOutageData)
           .map {

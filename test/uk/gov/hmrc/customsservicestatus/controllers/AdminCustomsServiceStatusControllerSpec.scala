@@ -8,7 +8,7 @@ import play.api.test.Helpers.{status, stubControllerComponents}
 import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError.GenericError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageRequestData
+import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -27,13 +27,13 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
     "validate a correct request json and call the service with a valid case class instance" in {
       when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(None))
       val result =
-        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageRequestData](validUnplannedOutageRequestData)))
+        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageRequestData)))
       status(result) shouldBe OK
     }
     "return a bad request status when the service returns an error" in {
       when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(Some(GenericError)))
       val result =
-        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageRequestData](validUnplannedOutageRequestData)))
+        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageRequestData)))
       status(result) shouldBe BAD_REQUEST
     }
   }

@@ -39,4 +39,6 @@ object UnplannedOutageData {
 
   implicit val format: OFormat[UnplannedOutageData] =
     Json.using[WithDefaultValues].format[UnplannedOutageData]
+
+  implicit val alternateFormat: OFormat[UnplannedOutageData] = Json.format[UnplannedOutageData]
 }
