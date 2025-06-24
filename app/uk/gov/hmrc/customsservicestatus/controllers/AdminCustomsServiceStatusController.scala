@@ -19,14 +19,14 @@ package uk.gov.hmrc.customsservicestatus.controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageRequestData
-import uk.gov.hmrc.customsservicestatus.services.AdminCustomsServiceStatusService
+import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton()
-class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsServiceStatusService, cc: ControllerComponents)(
-  implicit ec: ExecutionContext
+class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsStatusService, cc: ControllerComponents)(implicit
+  ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
 
   def updateWithUnplannedOutage(): Action[JsValue] =

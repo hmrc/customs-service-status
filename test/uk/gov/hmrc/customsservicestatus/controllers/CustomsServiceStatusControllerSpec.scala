@@ -33,15 +33,14 @@ import scala.concurrent.Future
 
 class CustomsServiceStatusControllerSpec extends BaseSpec {
 
-  val checkService: CustomsServiceStatusService = mock[CustomsServiceStatusService]
-  val controller = new CustomsServiceStatusController(checkService, stubControllerComponents())
+  val controller = new CustomsServiceStatusController(mockCheckService, stubControllerComponents())
 
   "updateServiceStatus" should {
 
     "return NOT_FOUND if service is not configured" in {
       val serviceId = "myService"
       val state     = AVAILABLE
-      when(checkService.updateServiceStatus(serviceId, state)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
+      when(mockCheckService.updateServiceStatus(serviceId, state)).thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
       val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson[State](state)))
       status(result)          shouldBe NOT_FOUND
       contentAsString(result) shouldBe s"Service with name $serviceId not configured"
@@ -49,7 +48,7 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
 
     "return BAD_REQUEST if invalid json state supplied" in {
       val serviceId = "myService"
-      when(checkService.updateServiceStatus(serviceId, State.AVAILABLE))
+      when(mockCheckService.updateServiceStatus(serviceId, State.AVAILABLE))
         .thenReturn(EitherT.leftT[Future, CustomsServiceStatus](ServiceNotConfiguredError))
       val result = controller.updateServiceStatus(serviceId)(FakeRequest().withBody(Json.toJson("OK")))
       status(result)          shouldBe BAD_REQUEST
@@ -59,7 +58,7 @@ class CustomsServiceStatusControllerSpec extends BaseSpec {
     "return OK with with id, name and description in response if service can be found in config" in {
       val serviceId = "myService"
       val state     = AVAILABLE
-      when(checkService.updateServiceStatus(serviceId, state))
+      when(mockCheckService.updateServiceStatus(serviceId, state))
         .thenReturn(
           EitherT.rightT[Future, CustomsServiceStatusError](
             CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now), Some(Instant.now))

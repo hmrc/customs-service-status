@@ -27,7 +27,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AdminCustomsServiceStatusService @Inject() (
+class AdminCustomsStatusService @Inject() (
   val config:                          Configuration,
   adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
 )(implicit
