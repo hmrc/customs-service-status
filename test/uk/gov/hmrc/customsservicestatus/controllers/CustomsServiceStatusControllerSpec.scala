@@ -26,7 +26,6 @@ import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.State.AVAILABLE
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
-import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 import java.time.Instant
 import scala.concurrent.Future
