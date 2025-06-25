@@ -16,7 +16,7 @@ import scala.concurrent.Future
 class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
   val controller = new AdminCustomsServiceStatusController(mockAdminCustomsStatusService, stubControllerComponents())
 
-  val validUnplannedOutageRequestData: UnplannedOutageRequestData = UnplannedOutageRequestData(
+  val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
     InternalReference("Test reference"),
     Preview("Test details"),
     Instant.now(),
@@ -27,13 +27,13 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
     "validate a correct request json and call the service with a valid case class instance" in {
       when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(None))
       val result =
-        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageRequestData)))
+        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
       status(result) shouldBe OK
     }
     "return a bad request status when the service returns an error" in {
       when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(Some(GenericError)))
       val result =
-        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageRequestData)))
+        controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
       status(result) shouldBe BAD_REQUEST
     }
   }

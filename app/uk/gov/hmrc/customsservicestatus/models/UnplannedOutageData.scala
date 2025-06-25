@@ -34,11 +34,8 @@ object UnplannedOutageData {
 
   val mongoFormat: OFormat[UnplannedOutageData] = {
     implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-    Json.using[WithDefaultValues].format[UnplannedOutageData]
+    Json.format[UnplannedOutageData]
   }
 
-  implicit val format: OFormat[UnplannedOutageData] =
-    Json.using[WithDefaultValues].format[UnplannedOutageData]
-
-  implicit val alternateFormat: OFormat[UnplannedOutageData] = Json.format[UnplannedOutageData]
+  implicit val format: OFormat[UnplannedOutageData] = Json.format[UnplannedOutageData]
 }
