@@ -53,7 +53,6 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
       
       result.header.status shouldBe OK
       status(findResult)   shouldBe OK
-      println(contentAsJson(findResult).toString)
       contentAsJson(findResult).as[List[UnplannedOutageData]] shouldBe List(validUnplannedOutageData)
     }
 
