@@ -39,6 +39,7 @@ trait BaseSpec
     with ScalaFutures
     with OptionValues
     with Configs
+    with AllMocks
     with Status {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
