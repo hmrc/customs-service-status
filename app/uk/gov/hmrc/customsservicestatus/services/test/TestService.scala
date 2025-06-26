@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.services.test
 
-import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
+import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, CustomsServiceStatusRepository}
 import uk.gov.hmrc.play.http.logging.Mdc
 import org.mongodb.scala.SingleObservableFuture
 
@@ -25,12 +25,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestService @Inject() (
-  customsServiceStatusRepository: CustomsServiceStatusRepository
+  customsServiceStatusRepository: CustomsServiceStatusRepository,
+  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
 )(implicit ec: ExecutionContext) {
 
   def clearAllData: Future[Unit] =
     for {
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
+      _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.collection.drop().toFuture())
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes())
     } yield ()
 }
