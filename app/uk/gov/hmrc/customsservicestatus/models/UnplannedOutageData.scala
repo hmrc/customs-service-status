@@ -24,10 +24,10 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.time.Instant
 
 case class UnplannedOutageData(
-                                internalReference: InternalReference,
-                                preview: Preview,
-                                lastUpdated:       Instant,
-                                notesForClsUsers:  Option[String]
+  internalReference: InternalReference,
+  preview:           Preview,
+  lastUpdated:       Instant,
+  notesForClsUsers:  Option[String]
 )
 
 object UnplannedOutageData {

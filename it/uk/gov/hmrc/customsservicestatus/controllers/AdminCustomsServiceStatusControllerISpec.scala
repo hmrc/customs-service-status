@@ -33,21 +33,38 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(uk.gov.hmrc.customsservicestatus.controllers.test.routes.TestController.clearAllData)))
   }
 
+  private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
+    InternalReference("Testing reference"),
+    Preview("Testing additional details"),
+    Instant.parse("2025-01-01T00:00:00.000Z"),
+    None
+  )
+
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged" in {
-      val result = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.updateWithUnplannedOutage()).withBody(Json.toJson(UnplannedOutageData(
-        InternalReference("Testing reference"),
-        Preview("Testing additional details"),
-        Instant.now(),
-        None
-      ))))
-      status(result) shouldBe OK
+      val result =
+        await(
+          callRoute(
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithUnplannedOutage()).withBody(Json.toJson(validUnplannedOutageData))
+          )
+        )
+        
+      val findResult = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.list()))
+      
+      result.header.status shouldBe OK
+      status(findResult)   shouldBe OK
+      println(contentAsJson(findResult).toString)
+      contentAsJson(findResult).as[List[UnplannedOutageData]] shouldBe List(validUnplannedOutageData)
     }
 
     "return a 400 if the information insert was unsuccessful" in {
-      val result = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.updateWithUnplannedOutage()).withBody(Json.obj(
-        "invalid" -> "object"
-      )))
+      val result = callRoute(
+        fakeRequest(routes.AdminCustomsServiceStatusController.updateWithUnplannedOutage()).withBody(
+          Json.obj(
+            "invalid" -> "object"
+          )
+        )
+      )
       status(result) shouldBe BAD_REQUEST
     }
 

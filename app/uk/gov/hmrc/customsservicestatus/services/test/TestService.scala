@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestService @Inject() (
-  customsServiceStatusRepository: CustomsServiceStatusRepository,
+  customsServiceStatusRepository:      CustomsServiceStatusRepository,
   adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
 )(implicit ec: ExecutionContext) {
 
