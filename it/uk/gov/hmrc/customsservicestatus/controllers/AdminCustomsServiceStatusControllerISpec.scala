@@ -48,11 +48,11 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
             fakeRequest(routes.AdminCustomsServiceStatusController.updateWithUnplannedOutage()).withBody(Json.toJson(validUnplannedOutageData))
           )
         )
-        
+
       val findResult = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.list()))
-      
-      result.header.status shouldBe OK
-      status(findResult)   shouldBe OK
+
+      result.header.status                                    shouldBe OK
+      status(findResult)                                      shouldBe OK
       contentAsJson(findResult).as[List[UnplannedOutageData]] shouldBe List(validUnplannedOutageData)
     }
 
