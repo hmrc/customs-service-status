@@ -16,8 +16,4 @@
 
 package uk.gov.hmrc.customsservicestatus.errorhandlers
 
-sealed trait AdminCustomsServiceStatusError
-
-object AdminCustomsServiceStatusError {
-  case object GenericError extends AdminCustomsServiceStatusError
-}
+case object AdminCustomsServiceStatusInsertError

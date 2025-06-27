@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
+import cats.data.EitherT
 import com.google.inject.Singleton
 import play.api.Configuration
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusError.*
+import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError.*
 import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
@@ -36,14 +37,14 @@ class AdminCustomsStatusService @Inject() (
 
   def submitUnplannedOutage(
     unplannedOutageData: UnplannedOutageData
-  ): Future[Option[AdminCustomsServiceStatusError]] =
+  ): Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] =
     adminCustomsServiceStatusRepository
       .submitUnplannedOutage(
         unplannedOutageData
       )
       .map {
-        case insert if insert.wasAcknowledged() => None
-        case _                                  => Some(GenericError)
+        case insert if insert.wasAcknowledged() => Right(())
+        case _                                  => Left(AdminCustomsServiceStatusInsertError)
       }
 
   def listAll: Future[List[UnplannedOutageData]] =

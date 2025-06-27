@@ -35,8 +35,8 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
         adminCustomsServiceStatusService
           .submitUnplannedOutage(unplannedOutageData)
           .map {
-            case Some(error) => BadRequest
-            case None        => Ok
+            case Left(error) => BadRequest
+            case Right(_)    => Ok
           }
       }
     }
