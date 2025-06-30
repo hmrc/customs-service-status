@@ -17,6 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.Json
+import uk.gov.hmrc.customsservicestatus.controllers.test.routes as testRoutes
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
@@ -30,7 +31,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    await(callRoute(fakeRequest(uk.gov.hmrc.customsservicestatus.controllers.test.routes.TestController.clearAllData)))
+    await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
   private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
@@ -49,7 +50,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
           )
         )
 
-      val findResult = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.list()))
+      val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
 
       result.header.status                                    shouldBe OK
       status(findResult)                                      shouldBe OK

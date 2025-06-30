@@ -19,11 +19,9 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes as testRoutes}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.customsservicestatus.models.State.{AVAILABLE, UNAVAILABLE}
 import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
 
 import java.time.Instant
-import java.time.temporal.ChronoUnit.*
 
 class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
 

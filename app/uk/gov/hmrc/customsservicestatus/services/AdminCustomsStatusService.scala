@@ -47,6 +47,4 @@ class AdminCustomsStatusService @Inject() (
         case _                                  => Left(AdminCustomsServiceStatusInsertError)
       }
 
-  def listAll: Future[List[UnplannedOutageData]] =
-    adminCustomsServiceStatusRepository.findAll()
 }

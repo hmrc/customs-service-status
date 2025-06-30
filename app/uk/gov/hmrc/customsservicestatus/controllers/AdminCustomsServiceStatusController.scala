@@ -28,7 +28,6 @@ import scala.concurrent.ExecutionContext
 class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsStatusService, cc: ControllerComponents)(implicit
   ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
-
   def updateWithUnplannedOutage(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
       validateJson[UnplannedOutageData] { unplannedOutageData =>
@@ -40,8 +39,4 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           }
       }
     }
-
-  def list(): Action[AnyContent] = Action.async { _ =>
-    adminCustomsServiceStatusService.listAll.map(result => Ok(Json.toJson(result)))
-  }
 }
