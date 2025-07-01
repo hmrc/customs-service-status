@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus.repositories
+package uk.gov.hmrc.customsservicestatus.helpers
 
-import org.scalatest.concurrent.ScalaFutures
-import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 
-import java.time.LocalDateTime
+import java.time.Instant
 
-class PlannedWorkRepositorySpec extends BaseSpec with ScalaFutures with DefaultPlayMongoRepositorySupport[PlannedWorkRepository] {
-  "PlannedWorkRepository" should {
-    "" in {
-      val document = PlannedWork((LocalDateTime.of(2022, 2, 23, 2, 22), LocalDateTime.of(2022, 2, 23, 2, 22), "cccc"))
-      val result   = await(mockPlannedWorkRepository.insert())
+object TestData {
 
-      println(result)
-    }
-  }
+  val fakePlannedWork: PlannedWork = PlannedWork(Instant.parse("2025-02-08T01:19:31.178Z"), Instant.parse("2025-02-09T01:19:31.178Z"), "details")
+
+  val fakePlannedWorks: List[PlannedWork] = List(
+    PlannedWork(Instant.parse("2025-02-04T01:19:31.154Z"), Instant.parse("2025-02-05T01:19:31.154Z"), ""),
+    PlannedWork(Instant.parse("2025-02-08T01:19:31.178Z"), Instant.parse("2025-02-09T01:19:31.178Z"), "details")
+  )
+
 }

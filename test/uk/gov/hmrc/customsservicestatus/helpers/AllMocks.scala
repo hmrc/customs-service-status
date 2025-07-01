@@ -21,10 +21,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.repositories.{CustomsServiceStatusRepository, PlannedWorkRepository}
-import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
+import uk.gov.hmrc.customsservicestatus.services.{CustomsServiceStatusService, PlannedWorkService}
 
 trait AllMocks extends MockitoSugar { me: BeforeAndAfterEach =>
   val mockCheckService:                   CustomsServiceStatusService    = mock[CustomsServiceStatusService]
+  val mockPlannedWorkService:             PlannedWorkService             = mock[PlannedWorkService]
   val mockCustomsServiceStatusRepository: CustomsServiceStatusRepository = mock[CustomsServiceStatusRepository]
   val mockConfig:                         Configuration                  = mock[Configuration]
   val mockPlannedWorkRepository:          PlannedWorkRepository          = mock[PlannedWorkRepository]
@@ -32,6 +33,7 @@ trait AllMocks extends MockitoSugar { me: BeforeAndAfterEach =>
   override protected def beforeEach(): Unit =
     Seq[Any](
       mockCheckService,
+      mockPlannedWorkService,
       mockConfig,
       mockCustomsServiceStatusRepository,
       mockPlannedWorkRepository

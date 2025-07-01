@@ -20,16 +20,15 @@ import play.api.{Configuration, Logging}
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.customsservicestatus.repositories.PlannedWorkRepository
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class PlannedWorkService @Inject() (val config: Configuration, plannedWorkRepository: PlannedWorkRepository)(implicit
   val ec: ExecutionContext
 ) extends Logging {
 
-  def getPlannedWorkService: Future[List[PlannedWork]] = {
-    println("TTTT")
+  def getPlannedWorkService: Future[List[PlannedWork]] =
     plannedWorkRepository.findAll()
-  }
 
 }

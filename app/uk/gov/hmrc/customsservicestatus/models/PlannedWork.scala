@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.customsservicestatus.models
 
-import play.api.libs.json.{Json, OFormat}
-import play.api.libs.json.*
 import play.api.libs.json.Json.WithDefaultValues
+import play.api.libs.json.*
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-import java.time.{Instant, LocalDateTime}
+import java.time.Instant
 
 case class PlannedWork(dateFrom: Instant, dateTo: Instant, details: String)
 

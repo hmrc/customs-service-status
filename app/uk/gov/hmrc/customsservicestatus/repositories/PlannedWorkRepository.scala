@@ -16,22 +16,15 @@
 
 package uk.gov.hmrc.customsservicestatus.repositories
 
-import com.mongodb.client.model.Indexes.{ascending, descending}
-import com.mongodb.client.model.Projections.include
-import com.mongodb.client.model.ReturnDocument.AFTER
-import com.mongodb.client.model.Updates
-import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions}
+import com.mongodb.client.model.Indexes.ascending
+import org.mongodb.scala.*
+import org.mongodb.scala.model.{IndexModel, IndexOptions}
+import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
-import org.mongodb.scala.*
-import org.mongodb.scala.model.Aggregates.{filter, project, sort}
-import org.mongodb.scala.model.Filters.and
-import org.mongodb.scala.result.InsertOneResult
-import uk.gov.hmrc.customsservicestatus.models
 
-import java.time.LocalDateTime
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -51,10 +44,5 @@ class PlannedWorkRepository @Inject() (
     ) {
 
   def findAll(): Future[List[PlannedWork]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
-
-//  def insert(): Future[InsertOneResult] =
-//    Mdc.preservingMdc(
-//      collection.insertOne(PlannedWork(LocalDateTime.of(2022, 2, 23, 2, 22), LocalDateTime.of(2022, 2, 23, 2, 22), "cccc")).toFuture()
-//    )
 
 }

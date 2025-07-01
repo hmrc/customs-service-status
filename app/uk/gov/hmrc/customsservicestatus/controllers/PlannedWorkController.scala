@@ -16,18 +16,19 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, ControllerComponents}
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.customsservicestatus.services.PlannedWorkService
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
+@Singleton
 class PlannedWorkController @Inject() (plannedWorkService: PlannedWorkService, cc: ControllerComponents)(implicit
   ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
-  def getPlannedWork: Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def getPlannedWork: Action[AnyContent] = Action.async { implicit request =>
     plannedWorkService.getPlannedWorkService.map(result => Ok(Json.toJson(result)))
   }
 }
