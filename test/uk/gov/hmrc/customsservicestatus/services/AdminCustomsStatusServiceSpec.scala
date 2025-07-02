@@ -44,13 +44,13 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   }
 
   "submitPlannedOutage" should {
-    "return None given valid unplanned outage data" in new Setup {
+    "return a Right containing Unit given valid unplanned outage data" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
       val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitUnplannedOutage(validOutageUnplannedData)
       result.futureValue shouldBe Right(())
     }
 
-    "return an error if the insert was not acknowledged" in new Setup {
+    "return a Left with an error if the insert was not acknowledged" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
       val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitUnplannedOutage(validOutageUnplannedData)
       result.futureValue shouldBe Left(AdminCustomsServiceStatusInsertError)

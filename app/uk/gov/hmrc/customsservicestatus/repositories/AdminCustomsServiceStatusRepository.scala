@@ -38,8 +38,7 @@ class AdminCustomsServiceStatusRepository @Inject() (
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
         IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx"))
-      ),
-      replaceIndexes = true
+      )
     ) {
 
   def submitUnplannedOutage(adminCustomsServiceStatus: UnplannedOutageData): Future[result.InsertOneResult] =
