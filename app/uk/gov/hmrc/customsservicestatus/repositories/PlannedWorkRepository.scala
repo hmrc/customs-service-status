@@ -33,7 +33,7 @@ class PlannedWorkRepository @Inject() (
   mongo: MongoComponent
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[PlannedWork](
-      collectionName = "customs-service-status-planned-work",
+      collectionName = "planned-work",
       mongoComponent = mongo,
       domainFormat = PlannedWork.mongoFormat,
       indexes = Seq(
@@ -43,6 +43,6 @@ class PlannedWorkRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  def findAll(): Future[List[PlannedWork]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
+  def findAll(): Future[Seq[PlannedWork]] = Mdc.preservingMdc(collection.find().toFuture())
 
 }

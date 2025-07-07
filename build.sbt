@@ -24,6 +24,12 @@ lazy val microservice = Project("customs-service-status", file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
+    IntegrationTest / unmanagedSourceDirectories :=
+      (IntegrationTest / baseDirectory)(base => Seq(base / "it", base / "test-common")).value,
+    Test / unmanagedSourceDirectories := (Test / baseDirectory)(base => Seq(base / "test", base / "test-common")).value,
+  )
+  .settings(
     addCommandAlias("runTestOnly", "run -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes"),
     addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt"),
     addCommandAlias("verify", ";reload;format;test")

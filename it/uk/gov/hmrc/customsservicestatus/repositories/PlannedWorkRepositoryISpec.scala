@@ -19,7 +19,6 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.helpers.ItTestData.fakePlannedWorks
 
 class PlannedWorkRepositoryISpec extends BaseISpec {
 

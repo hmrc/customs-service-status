@@ -32,7 +32,8 @@ class TestService @Inject() (
   def clearAllData: Future[Unit] =
     for {
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
-      _ <- Mdc.preservingMdc(plannedWorkRepository.collection.drop().toFuture())
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes())
+      _ <- Mdc.preservingMdc(plannedWorkRepository.collection.drop().toFuture())
+      _ <- Mdc.preservingMdc(plannedWorkRepository.ensureIndexes())
     } yield ()
 }

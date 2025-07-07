@@ -32,7 +32,7 @@ class PlannedWorkControllerSpec extends BaseSpec {
   "getPlannedWork" should {
     "return OK and call the PlannedWorkService" in {
 
-      when(mockPlannedWorkService.getPlannedWorkService).thenReturn(Future[List[PlannedWork]](fakePlannedWorks))
+      when(mockPlannedWorkService.getPlannedWork).thenReturn(Future[List[PlannedWork]](fakePlannedWorks))
 
       val result = plannedWorkController.getPlannedWork(FakeRequest())
       status(result) shouldBe OK

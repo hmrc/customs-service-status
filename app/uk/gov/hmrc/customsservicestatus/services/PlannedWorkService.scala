@@ -20,6 +20,7 @@ import play.api.{Configuration, Logging}
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.customsservicestatus.repositories.PlannedWorkRepository
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,7 +29,7 @@ class PlannedWorkService @Inject() (val config: Configuration, plannedWorkReposi
   val ec: ExecutionContext
 ) extends Logging {
 
-  def getPlannedWorkService: Future[List[PlannedWork]] =
-    plannedWorkRepository.findAll()
+  def getPlannedWork: Future[Seq[PlannedWork]] =
+    plannedWorkRepository.findAll().map(_.sortBy(_.dateFrom)(Ordering[Instant].reverse))
 
 }

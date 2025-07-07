@@ -29,6 +29,6 @@ class PlannedWorkController @Inject() (plannedWorkService: PlannedWorkService, c
   ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
   def getPlannedWork: Action[AnyContent] = Action.async { implicit request =>
-    plannedWorkService.getPlannedWorkService.map(result => Ok(Json.toJson(result)))
+    plannedWorkService.getPlannedWork.map(result => Ok(Json.toJson(result)))
   }
 }

@@ -19,7 +19,6 @@ package uk.gov.hmrc.customsservicestatus.controllers
 import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.helpers.ItTestData.fakePlannedWorks
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.customsservicestatus.repositories.PlannedWorkRepository
 
