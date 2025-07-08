@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.repositories
 
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
+import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import uk.gov.hmrc.customsservicestatus.models
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
@@ -43,6 +44,15 @@ class PlannedWorkRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  def findAll(): Future[Seq[PlannedWork]] = Mdc.preservingMdc(collection.find().toFuture())
+  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] = {
+
+    val findQuery = collection.find()
+
+    maybeSort match {
+      case Some(sort) => Mdc.preservingMdc(findQuery.sort(sort).toFuture())
+      case None       => findQuery.toFuture()
+
+    }
+  }
 
 }

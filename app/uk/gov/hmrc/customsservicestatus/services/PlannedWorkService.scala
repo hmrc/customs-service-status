@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
+import org.mongodb.scala.model.Sorts
 import play.api.{Configuration, Logging}
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.customsservicestatus.repositories.PlannedWorkRepository
@@ -30,6 +31,6 @@ class PlannedWorkService @Inject() (val config: Configuration, plannedWorkReposi
 ) extends Logging {
 
   def getPlannedWork: Future[Seq[PlannedWork]] =
-    plannedWorkRepository.findAll().map(_.sortBy(_.dateFrom)(Ordering[Instant].reverse))
+    plannedWorkRepository.findAll(Some(Sorts.descending("dateFrom"))).map(_.sortBy(_.dateFrom)(Ordering[Instant].reverse))
 
 }
