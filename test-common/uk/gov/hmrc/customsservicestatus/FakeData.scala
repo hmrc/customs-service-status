@@ -41,8 +41,8 @@ trait FakeData {
   val plannedWork: PlannedWork = PlannedWork(Instant.parse("2025-02-08T01:19:31.178Z"), Instant.parse("2025-02-09T01:19:31.178Z"), "details")
 
   val fakePlannedWorks: List[PlannedWork] = List(
-    PlannedWork(Instant.parse("2025-02-08T01:19:31.178Z"), Instant.parse("2025-02-09T01:19:31.178Z"), "details"),
-    PlannedWork(Instant.parse("2025-02-04T01:19:31.154Z"), Instant.parse("2025-02-05T01:19:31.154Z"), "")
+    PlannedWork(Instant.parse("2025-02-04T01:19:31.154Z"), Instant.parse("2025-02-05T01:19:31.154Z"), ""),
+    PlannedWork(Instant.parse("2025-02-08T01:19:31.178Z"), Instant.parse("2025-02-09T01:19:31.178Z"), "details")
   )
 
 }

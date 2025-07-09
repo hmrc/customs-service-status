@@ -44,15 +44,12 @@ class PlannedWorkRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] = {
-
-    val findQuery = collection.find()
-
+  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] =
     maybeSort match {
-      case Some(sort) => Mdc.preservingMdc(findQuery.sort(sort).toFuture())
-      case None       => findQuery.toFuture()
+      case Some(sort) =>
+        Mdc.preservingMdc(collection.find().sort(sort).toFuture())
+      case None => Mdc.preservingMdc(collection.find().toFuture())
 
     }
-  }
 
 }

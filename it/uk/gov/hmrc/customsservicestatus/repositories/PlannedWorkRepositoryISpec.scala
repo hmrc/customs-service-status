@@ -17,6 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.repositories
 
 import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.model.Sorts
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 
@@ -32,7 +33,7 @@ class PlannedWorkRepositoryISpec extends BaseISpec {
 
   "findAll" should {
     "return empty list if no record in the db" in {
-      val result = await(plannedWorkRepository.findAll())
+      val result = await(plannedWorkRepository.findAll(None))
       result.size shouldBe 0
     }
 
@@ -43,7 +44,7 @@ class PlannedWorkRepositoryISpec extends BaseISpec {
           .toFuture()
       )
 
-      val result = await(plannedWorkRepository.findAll())
+      val result = await(plannedWorkRepository.findAll(Some(Sorts.descending("dateFrom"))))
       result.size shouldBe 2
     }
   }
