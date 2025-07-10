@@ -20,7 +20,6 @@ import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, stubControllerComponents}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
-import uk.gov.hmrc.customsservicestatus.helpers.TestData.fakePlannedWorks
 import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 
 import scala.concurrent.Future
