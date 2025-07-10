@@ -16,11 +16,9 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
-import cats.data.EitherT
 import com.google.inject.Singleton
 import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError.*
 import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 

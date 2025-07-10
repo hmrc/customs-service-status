@@ -18,12 +18,11 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.{ConfigLoader, Configuration}
+import play.api.ConfigLoader
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.State.AVAILABLE
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
-import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import java.time.Instant
 import scala.concurrent.Future

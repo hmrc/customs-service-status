@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
-import play.api.Logging
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
@@ -28,7 +27,7 @@ import scala.concurrent.ExecutionContext
 @Singleton()
 class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsStatusService, cc: ControllerComponents)(implicit
   ec: ExecutionContext
-) extends BaseCustomsServiceStatusController(cc) with Logging {
+) extends BaseCustomsServiceStatusController(cc) {
   def updateWithUnplannedOutage(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
       validateJson[UnplannedOutageData] { unplannedOutageData =>
@@ -38,7 +37,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
             case Left(error) =>
               logger.error(s"Unplanned outage with internal reference ${unplannedOutageData.internalReference} could not be written to the database")
               InternalServerError
-            case Right(_)    => Ok
+            case Right(_) => Ok
           }
       }
     }

@@ -46,11 +46,11 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
         controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
       status(result) shouldBe OK
     }
-    "return a bad request status when the service returns an error" in {
+    "return an InternalServerError status when the service returns an error" in {
       when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(Left(AdminCustomsServiceStatusInsertError)))
       val result =
         controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
-      status(result) shouldBe BAD_REQUEST
+      status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 }
