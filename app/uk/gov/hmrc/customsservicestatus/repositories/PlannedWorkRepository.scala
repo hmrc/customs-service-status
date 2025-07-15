@@ -43,14 +43,12 @@ class PlannedWorkRepository @Inject() (
       )
     ) {
 
-  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] = {
-    println("giati")
+  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] =
     maybeSort match {
       case Some(sort) =>
         Mdc.preservingMdc(collection.find().sort(sort).toFuture())
       case None => Mdc.preservingMdc(collection.find().toFuture())
 
     }
-  }
 
 }
