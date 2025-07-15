@@ -40,16 +40,17 @@ class PlannedWorkRepository @Inject() (
       indexes = Seq(
         IndexModel(ascending("dateFrom"), IndexOptions().name("dateFromIdx")),
         IndexModel(ascending("dateTo"), IndexOptions().name("dateToIdx"))
-      ),
-      replaceIndexes = true
+      )
     ) {
 
-  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] =
+  def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] = {
+    println("giati")
     maybeSort match {
       case Some(sort) =>
         Mdc.preservingMdc(collection.find().sort(sort).toFuture())
       case None => Mdc.preservingMdc(collection.find().toFuture())
 
     }
+  }
 
 }
