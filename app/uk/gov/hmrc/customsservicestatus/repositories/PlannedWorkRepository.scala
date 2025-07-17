@@ -25,7 +25,9 @@ import uk.gov.hmrc.customsservicestatus.models.PlannedWork
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
+import org.mongodb.scala.model.Filters.*
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,11 +45,13 @@ class PlannedWorkRepository @Inject() (
       )
     ) {
 
+  val now: Instant = Instant.now()
+
   def findAll(maybeSort: Option[Bson]): Future[Seq[PlannedWork]] =
     maybeSort match {
       case Some(sort) =>
-        Mdc.preservingMdc(collection.find().sort(sort).toFuture())
-      case None => Mdc.preservingMdc(collection.find().toFuture())
+        Mdc.preservingMdc(collection.find(filter = gte("dateTo", now)).sort(sort).toFuture())
+      case None => Mdc.preservingMdc(collection.find(filter = gte("dateTo", now)).toFuture())
 
     }
 
