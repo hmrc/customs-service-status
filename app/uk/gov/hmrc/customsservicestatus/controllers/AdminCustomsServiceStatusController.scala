@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
-import play.api.libs.json.JsValue
-import play.api.mvc.{Action, ControllerComponents}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
@@ -41,4 +41,8 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           }
       }
     }
+
+  def findAllOutages(): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.findAllOutages().map(result => Ok(Json.toJson(result)))
+  }
 }
