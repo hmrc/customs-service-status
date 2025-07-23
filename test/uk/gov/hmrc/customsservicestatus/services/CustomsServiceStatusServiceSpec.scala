@@ -18,25 +18,21 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.when
-import play.api.{ConfigLoader, Configuration}
+import play.api.ConfigLoader
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.State.AVAILABLE
 import uk.gov.hmrc.customsservicestatus.models.{CustomsServiceStatus, State}
-import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import java.time.Instant
 import scala.concurrent.Future
 
 class CustomsServiceStatusServiceSpec extends BaseSpec {
-  val repo:   CustomsServiceStatusRepository = mock[CustomsServiceStatusRepository]
-  val config: Configuration                  = mock[Configuration]
-
   "updateServiceStatus" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
       val serviceId = "myService"
-      when(config.get[List[CustomsServiceStatus]](eqTo("services"))(any[ConfigLoader[List[CustomsServiceStatus]]]())).thenReturn(List.empty)
-      val service = new CustomsServiceStatusService(config, repo)
+      when(mockConfig.get[List[CustomsServiceStatus]](eqTo("services"))(any[ConfigLoader[List[CustomsServiceStatus]]]())).thenReturn(List.empty)
+      val service = new CustomsServiceStatusService(mockConfig, mockCustomsServiceStatusRepository)
       service.updateServiceStatus(serviceId, State.AVAILABLE).value.futureValue shouldBe (Left(ServiceNotConfiguredError))
     }
 
@@ -44,10 +40,10 @@ class CustomsServiceStatusServiceSpec extends BaseSpec {
       val serviceId            = "haulier123" // this is configured in application.conf
       val state                = AVAILABLE
       val customsServiceStatus = CustomsServiceStatus(serviceId, "name", "description", Some(state), Some(Instant.now), Some(Instant.now))
-      when(config.get[List[CustomsServiceStatus]](eqTo("services"))(any[ConfigLoader[List[CustomsServiceStatus]]]()))
+      when(mockConfig.get[List[CustomsServiceStatus]](eqTo("services"))(any[ConfigLoader[List[CustomsServiceStatus]]]()))
         .thenReturn(List(customsServiceStatus))
-      val service = new CustomsServiceStatusService(config, repo)
-      when(repo.updateServiceStatus(any())).thenReturn(Future.successful(customsServiceStatus))
+      val service = new CustomsServiceStatusService(mockConfig, mockCustomsServiceStatusRepository)
+      when(mockCustomsServiceStatusRepository.updateServiceStatus(any())).thenReturn(Future.successful(customsServiceStatus))
       service.updateServiceStatus(serviceId, state).value.futureValue shouldBe (Right(customsServiceStatus))
     }
   }

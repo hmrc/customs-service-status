@@ -1,4 +1,5 @@
 # microservice specific routes
 
-PUT        /services/:id/status        uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.updateServiceStatus(id: String)
-GET        /services                   uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.list()
+PUT         /services/:id/status        uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.updateServiceStatus(id: String)
+GET         /services                   uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.list()
+POST        /services/messages          uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.updateWithUnplannedOutage()

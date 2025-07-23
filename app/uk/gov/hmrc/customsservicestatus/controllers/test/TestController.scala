@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers.test
 
-import com.google.inject._
-import play.api.mvc._
+import com.google.inject.*
+import play.api.libs.json.Json
+import play.api.mvc.*
 import uk.gov.hmrc.customsservicestatus.controllers.BaseCustomsServiceStatusController
 import uk.gov.hmrc.customsservicestatus.services.test.TestService
 
@@ -35,6 +36,10 @@ class TestController @Inject() (
       logger.warn("clear all data called")
       testService.clearAllData.map(_ => Ok)
     }
+  }
+
+  def list(): Action[AnyContent] = Action.async { _ =>
+    testService.listAll.map(result => Ok(Json.toJson(result)))
   }
 
   private def withRecover(f: => Future[Result]): Future[Result] = f.recover { case e: Exception =>
