@@ -36,7 +36,7 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
 
   private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
     InternalReference("Testing reference"),
-    Preview("Testing additional details"),
+    Details("Testing additional details"),
     Instant.parse("2025-01-01T00:00:00.000Z"),
     None
   )

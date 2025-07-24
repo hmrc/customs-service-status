@@ -24,7 +24,7 @@ import java.time.Instant
 
 case class UnplannedOutageData(
   internalReference: InternalReference,
-  preview:           Preview,
+  details:           Details,
   lastUpdated:       Instant,
   notesForClsUsers:  Option[String]
 )

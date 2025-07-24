@@ -34,7 +34,7 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
     InternalReference("Test reference"),
-    Preview("Test details"),
+    Details("Test details"),
     Instant.now(),
     None
   )

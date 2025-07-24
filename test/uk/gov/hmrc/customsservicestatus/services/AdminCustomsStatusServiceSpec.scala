@@ -33,7 +33,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
     val service = new AdminCustomsStatusService(mockConfig, mockAdminCustomsServiceStatusRepository)
     val validOutageUnplannedData: UnplannedOutageData = UnplannedOutageData(
       InternalReference("Test reference"),
-      Preview("Test preview"),
+      Details("Test preview"),
       Instant.now(),
       None
     )

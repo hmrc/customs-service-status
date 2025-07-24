@@ -26,6 +26,6 @@ case class ClsComms(
   internalReference: Option[InternalReference] = None,
   startDateTime:     Option[Instant] = None,
   endDateTime:       Option[Instant] = None,
-  details:           Option[Preview] = None,
+  details:           Option[Details] = None,
   clsNotes:          Option[String] = None
 )
