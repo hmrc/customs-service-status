@@ -24,6 +24,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,4 +50,6 @@ class AdminCustomsServiceStatusRepository @Inject() (
     )
 
   def findAll(): Future[List[UnplannedOutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
+
+  def find(id: UUID): Future[List[UnplannedOutageData]] = findAll().map(_.filter(_.internalReference == id))
 }
