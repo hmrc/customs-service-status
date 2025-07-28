@@ -34,20 +34,20 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
     InternalReference("Test reference"),
-    Preview("Test details"),
+    Details("Test details"),
     Instant.now(),
     None
   )
 
   "submitUnplannedOutage" should {
     "validate a correct request json and call the service with a valid case class instance" in {
-      when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(Right(())))
+      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Right(())))
       val result =
         controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
       status(result) shouldBe OK
     }
     "return an InternalServerError status when the service returns an error" in {
-      when(mockAdminCustomsStatusService.submitUnplannedOutage(any())).thenReturn(Future.successful(Left(AdminCustomsServiceStatusInsertError)))
+      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(AdminCustomsServiceStatusInsertError)))
       val result =
         controller.updateWithUnplannedOutage()(FakeRequest().withBody(Json.toJson[UnplannedOutageData](validUnplannedOutageData)))
       status(result) shouldBe INTERNAL_SERVER_ERROR

@@ -23,7 +23,7 @@ import org.mockito.Mockito.when
 import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 
 import java.time.Instant
 import scala.concurrent.Future
@@ -31,9 +31,9 @@ import scala.concurrent.Future
 class AdminCustomsStatusServiceSpec extends BaseSpec {
   trait Setup {
     val service = new AdminCustomsStatusService(mockConfig, mockAdminCustomsServiceStatusRepository)
-    val validOutageUnplannedData: UnplannedOutageData = UnplannedOutageData(
+    val validOutageData: OutageData = OutageData(
       InternalReference("Test reference"),
-      Preview("Test preview"),
+      Details("Test preview"),
       Instant.now(),
       None
     )
@@ -46,13 +46,12 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   "submitPlannedOutage" should {
     "return a Right containing Unit given valid unplanned outage data" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
-      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitUnplannedOutage(validOutageUnplannedData)
+      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(validOutageData)
       result.futureValue shouldBe Right(())
     }
 
     "return a Left with an error if the insert was not acknowledged" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
-      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitUnplannedOutage(validOutageUnplannedData)
       result.futureValue shouldBe Left(AdminCustomsServiceStatusInsertError)
     }
   }

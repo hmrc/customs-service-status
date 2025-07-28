@@ -23,6 +23,7 @@ import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
 import javax.inject.Inject
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -33,16 +34,22 @@ class AdminCustomsStatusService @Inject() (
   val executionContext: ExecutionContext
 ) {
 
-  def submitUnplannedOutage(
-    unplannedOutageData: UnplannedOutageData
+  def submitOutage(
+    outage: OutageData
   ): Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] =
     adminCustomsServiceStatusRepository
       .submitUnplannedOutage(
-        unplannedOutageData
+        outage
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
         case _                                  => Left(AdminCustomsServiceStatusInsertError)
       }
+
+  def findAllOutages(): Future[List[OutageData]] =
+    adminCustomsServiceStatusRepository.findAll()
+
+  def findOutage(id: UUID): Future[Option[OutageData]] =
+    adminCustomsServiceStatusRepository.find(id)
 
 }

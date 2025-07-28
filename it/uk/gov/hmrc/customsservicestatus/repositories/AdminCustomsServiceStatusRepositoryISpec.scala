@@ -34,16 +34,16 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
 
   val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
 
-  private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
+  private val validOutageData: OutageData = OutageData(
     InternalReference("Testing reference"),
-    Preview("Testing additional details"),
+    Details("Testing additional details"),
     Instant.parse("2025-01-01T00:00:00.000Z"),
     None
   )
 
   "submitUnplannedOutage" should {
     "create an entry in the database with a valid request" in {
-      val result = await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
+      val result = await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validOutageData))
       result.wasAcknowledged() shouldBe true
     }
   }
@@ -55,8 +55,8 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     }
 
     "return all the customsServiceStatus entries in the database" in {
-      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
-      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
+      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validOutageData))
+      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validOutageData))
       val result = await(adminCustomsServiceStatusRepository.findAll())
       result.size shouldBe 2
     }

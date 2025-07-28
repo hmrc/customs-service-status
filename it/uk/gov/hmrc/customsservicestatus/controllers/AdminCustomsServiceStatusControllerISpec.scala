@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.customsservicestatus.controllers.test.routes as testRoutes
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
 import java.time.Instant
@@ -34,9 +34,9 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
+  private val validUnplannedOutageData: OutageData = OutageData(
     InternalReference("Testing reference"),
-    Preview("Testing additional details"),
+    Details("Testing additional details"),
     Instant.parse("2025-01-01T00:00:00.000Z"),
     None
   )
