@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext
 class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsStatusService, cc: ControllerComponents)(implicit
   ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
-  def updateWithUnplannedOutage(): Action[JsValue] =
+  def updateWithOutageData(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
       validateJson[OutageData] { outageData =>
         adminCustomsServiceStatusService

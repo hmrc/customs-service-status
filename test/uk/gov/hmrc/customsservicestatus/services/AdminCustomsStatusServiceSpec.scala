@@ -31,12 +31,6 @@ import scala.concurrent.Future
 class AdminCustomsStatusServiceSpec extends BaseSpec {
   trait Setup {
     val service = new AdminCustomsStatusService(mockConfig, mockAdminCustomsServiceStatusRepository)
-    val validOutageData: OutageData = OutageData(
-      InternalReference("Test reference"),
-      Details("Test preview"),
-      Instant.now(),
-      None
-    )
     case class acknowledgedInsertOneResult(isAcknowledged: Boolean = true) extends InsertOneResult {
       override def wasAcknowledged(): Boolean   = isAcknowledged
       override def getInsertedId:     BsonValue = null
@@ -45,13 +39,14 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
   "submitPlannedOutage" should {
     "return a Right containing Unit given valid unplanned outage data" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
-      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(validOutageData)
+      when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(fakeOutageData)
       result.futureValue shouldBe Right(())
     }
 
     "return a Left with an error if the insert was not acknowledged" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.submitUnplannedOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+      when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(fakeOutageData)
       result.futureValue shouldBe Left(AdminCustomsServiceStatusInsertError)
     }
   }

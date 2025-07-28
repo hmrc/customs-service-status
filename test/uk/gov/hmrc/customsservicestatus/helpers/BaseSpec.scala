@@ -24,6 +24,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status
+import uk.gov.hmrc.customsservicestatus.helpers.FakeObjects
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,6 +41,7 @@ trait BaseSpec
     with OptionValues
     with Configs
     with AllMocks
+    with FakeObjects
     with Status {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
