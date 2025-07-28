@@ -42,7 +42,7 @@ class AdminCustomsServiceStatusRepository @Inject() (
       )
     ) {
 
-  def submitUnplannedOutage(outage: OutageData): Future[result.InsertOneResult] =
+  def submitOutage(outage: OutageData): Future[result.InsertOneResult] =
     Mdc.preservingMdc(
       collection
         .insertOne(outage)

@@ -38,7 +38,7 @@ class AdminCustomsStatusService @Inject() (
     outage: OutageData
   ): Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] =
     adminCustomsServiceStatusRepository
-      .submitUnplannedOutage(
+      .submitOutage(
         outage
       )
       .map {
