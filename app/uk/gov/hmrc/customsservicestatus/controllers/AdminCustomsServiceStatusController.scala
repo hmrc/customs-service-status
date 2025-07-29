@@ -36,7 +36,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           .submitOutage(outageData)
           .map {
             case Left(error) =>
-              logger.error(s"Unplanned outage with internal reference ${outageData.internalReference.text} could not be written to the database")
+              logger.error(s"Outage with internal reference ${outageData.internalReference.text} could not be written to the database")
               InternalServerError
             case Right(_) => Ok
           }
@@ -54,7 +54,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
   def deleteOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
     adminCustomsServiceStatusService.deleteOutage(id).map {
       case Left(error) =>
-        logger.error(s"Unplanned outage with id $id could not be deleted from the database")
+        logger.error(s"Outage with id $id could not be deleted from the database")
         InternalServerError
       case Right(_) => Ok
     }
