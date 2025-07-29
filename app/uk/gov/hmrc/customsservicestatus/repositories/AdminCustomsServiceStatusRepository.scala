@@ -21,6 +21,7 @@ import org.mongodb.scala.*
 import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.result.DeleteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -44,7 +45,7 @@ class AdminCustomsServiceStatusRepository @Inject() (
       )
     ) {
 
-  def submitOutage(outage: OutageData): Future[result.InsertOneResult] =
+  def submitOutage(outage: OutageData): Future[InsertOneResult] =
     Mdc.preservingMdc(
       collection
         .insertOne(outage)

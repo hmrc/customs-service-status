@@ -21,7 +21,7 @@ import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, stubControllerComponents}
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.*
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
@@ -42,7 +42,7 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
       status(result) shouldBe OK
     }
     "return an InternalServerError status when the service returns an error" in {
-      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(AdminCustomsServiceStatusInsertError)))
+      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(OutageInsertError)))
       val result =
         controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData)))
       status(result) shouldBe INTERNAL_SERVER_ERROR

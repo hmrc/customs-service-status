@@ -20,7 +20,8 @@ import com.mongodb.client.result.InsertOneResult
 import org.bson.BsonValue
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.*
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
@@ -40,14 +41,14 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   "submitPlannedOutage" should {
     "return a Right containing Unit given valid unplanned outage data" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
-      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(fakeOutageData)
+      val result: Future[Either[CustomsServiceStatusError, Unit]] = service.submitOutage(fakeOutageData)
       result.futureValue shouldBe Right(())
     }
 
     "return a Left with an error if the insert was not acknowledged" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
-      val result: Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] = service.submitOutage(fakeOutageData)
-      result.futureValue shouldBe Left(AdminCustomsServiceStatusInsertError)
+      val result: Future[Either[CustomsServiceStatusError, Unit]] = service.submitOutage(fakeOutageData)
+      result.futureValue shouldBe Left(OutageInsertError)
     }
   }
 }
