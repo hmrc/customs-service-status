@@ -18,8 +18,8 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import com.google.inject.Singleton
 import play.api.Configuration
-import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.*
-import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
@@ -37,7 +37,7 @@ class AdminCustomsStatusService @Inject() (
 
   def submitOutage(
     outage: OutageData
-  ): Future[Either[CustomsServiceStatusError, Unit]] =
+  ): Future[Either[OutageError, Unit]] =
     adminCustomsServiceStatusRepository
       .submitOutage(
         outage
@@ -53,6 +53,9 @@ class AdminCustomsStatusService @Inject() (
   def findOutage(id: UUID): Future[Option[OutageData]] =
     adminCustomsServiceStatusRepository.find(id)
 
-  def deleteOutage(id: UUID): Future[Unit] =
-    adminCustomsServiceStatusRepository.delete(id).map(_ => ())
+  def deleteOutage(id: UUID): Future[Either[OutageError, Unit]] =
+    adminCustomsServiceStatusRepository.delete(id).map {
+      case delete if delete.wasAcknowledged() && delete.getDeletedCount == 1 => Right(())
+      case _                                                                 => Left(OutageDeleteError)
+    }
 }
