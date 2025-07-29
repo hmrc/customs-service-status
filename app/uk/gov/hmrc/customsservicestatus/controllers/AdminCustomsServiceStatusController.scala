@@ -56,7 +56,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
       case Left(error) =>
         logger.error(s"Outage with id $id could not be deleted from the database")
         InternalServerError
-      case Right(_) => Ok
+      case Right(outage) => Ok(Json.toJson(outage))
     }
   }
 }

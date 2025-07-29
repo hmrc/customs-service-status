@@ -20,7 +20,6 @@ import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
-import org.mongodb.scala.result.DeleteResult
 import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
@@ -56,5 +55,9 @@ class AdminCustomsServiceStatusRepository @Inject() (
 
   def find(id: UUID): Future[Option[OutageData]] = findAll().map(_.find(_.id == id))
 
-  def delete(id: UUID): Future[DeleteResult] = Mdc.preservingMdc(collection.deleteOne(equal("id", id)).toFuture())
+  def delete(id: UUID): Future[Option[OutageData]] =
+    find(id).map(_.map { outage =>
+      Mdc.preservingMdc(collection.deleteOne(equal("id", outage.id)).toFuture())
+      outage
+    })
 }

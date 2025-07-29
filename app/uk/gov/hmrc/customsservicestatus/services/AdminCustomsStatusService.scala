@@ -53,9 +53,9 @@ class AdminCustomsStatusService @Inject() (
   def findOutage(id: UUID): Future[Option[OutageData]] =
     adminCustomsServiceStatusRepository.find(id)
 
-  def deleteOutage(id: UUID): Future[Either[OutageError, Unit]] =
+  def deleteOutage(id: UUID): Future[Either[OutageError, OutageData]] =
     adminCustomsServiceStatusRepository.delete(id).map {
-      case delete if delete.wasAcknowledged() && delete.getDeletedCount == 1 => Right(())
-      case _                                                                 => Left(OutageDeleteError)
+      case Some(outage) => Right(outage)
+      case _            => Left(OutageDeleteError)
     }
 }
