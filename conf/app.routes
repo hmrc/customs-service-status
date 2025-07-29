@@ -4,4 +4,5 @@ PUT         /services/:id/status        uk.gov.hmrc.customsservicestatus.control
 GET         /services                   uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.list()
 POST        /services/messages          uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.updateWithOutageData()
 GET         /outages                    uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.findAllOutages()
-GET         /outages/:id                    uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.findOutage(id: UUID)
+GET         /outages/:id                uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.findOutage(id: UUID)
+GET         /outages/delete/:id         uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.deleteOutage(id: UUID)

@@ -50,4 +50,8 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
   def findOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
     adminCustomsServiceStatusService.findOutage(id).map(outage => Ok(Json.toJson(outage)))
   }
+
+  def deleteOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.deleteOutage(id).map(_ => Ok(Json.obj("test" -> "something")))
+  }
 }

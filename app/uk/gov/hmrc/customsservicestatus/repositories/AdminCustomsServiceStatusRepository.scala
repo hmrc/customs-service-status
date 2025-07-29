@@ -19,6 +19,8 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.model.*
+import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.result.DeleteResult
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -52,4 +54,6 @@ class AdminCustomsServiceStatusRepository @Inject() (
   def findAll(): Future[List[OutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
 
   def find(id: UUID): Future[Option[OutageData]] = findAll().map(_.find(_.id == id))
+
+  def delete(id: UUID): Future[DeleteResult] = Mdc.preservingMdc(collection.deleteOne(equal("id", id)).toFuture())
 }
