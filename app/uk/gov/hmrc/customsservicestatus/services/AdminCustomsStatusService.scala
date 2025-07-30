@@ -43,8 +43,8 @@ class AdminCustomsStatusService @Inject() (
         outage
       )
       .map {
-        case insert if insert.wasAcknowledged() => Right(())
-        case _                                  => Left(OutageInsertError)
+        case insert if insert.wasAcknowledged() && !insert.getInsertedId.isNull => Right(())
+        case _                                                                  => Left(OutageInsertError)
       }
 
   def findAllOutages(): Future[List[OutageData]] =
@@ -54,7 +54,7 @@ class AdminCustomsStatusService @Inject() (
     adminCustomsServiceStatusRepository.find(id)
 
   def deleteOutage(id: UUID): Future[Either[OutageError, OutageData]] =
-    adminCustomsServiceStatusRepository.delete(id).map {
+    adminCustomsServiceStatusRepository.archive(id).map {
       case Some(outage) => Right(outage)
       case _            => Left(OutageDeleteError)
     }

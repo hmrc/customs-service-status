@@ -21,10 +21,10 @@ import org.mongodb.scala.*
 import org.mongodb.scala.bson.BsonBinary
 import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
-import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
 
@@ -33,12 +33,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AdminCustomsServiceStatusRepository @Inject() (
-  mongo:                     MongoComponent,
-  archivedOutagesRepository: ArchivedOutagesRepository
+class ArchivedOutagesRepository @Inject() (
+  mongo: MongoComponent
 )(implicit executionContext: ExecutionContext)
     extends PlayMongoRepository[OutageData](
-      collectionName = "admin-customs-service-status",
+      collectionName = "archived-outages",
       mongoComponent = mongo,
       domainFormat = OutageData.mongoFormat,
       indexes = Seq(
@@ -47,25 +46,10 @@ class AdminCustomsServiceStatusRepository @Inject() (
       )
     ) {
 
-  def submitOutage(outage: OutageData): Future[InsertOneResult] =
+  def addToArchived(outage: OutageData): Future[InsertOneResult] =
     Mdc.preservingMdc(
       collection
         .insertOne(outage)
         .toFuture()
     )
-
-  def findAll(): Future[List[OutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
-
-  def find(id: UUID): Future[Option[OutageData]] = Mdc.preservingMdc(collection.find(equal("id", id.toBson)).headOption())
-
-  def archive(id: UUID): Future[Option[OutageData]] =
-    for {
-      maybeOutageData <- find(id)
-      if maybeOutageData.nonEmpty
-      archivedResult <- archivedOutagesRepository.addToArchived(maybeOutageData.get)
-      if archivedResult.wasAcknowledged() && !archivedResult.getInsertedId.isNull
-    } yield {
-      Mdc.preservingMdc(collection.deleteOne(equal("id", id.toBson)).toFuture())
-      maybeOutageData
-    }
 }
