@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
-import play.api.libs.json.JsValue
-import play.api.mvc.{Action, ControllerComponents}
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
 import javax.inject.{Inject, Singleton}
@@ -28,17 +28,24 @@ import scala.concurrent.ExecutionContext
 class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusService: AdminCustomsStatusService, cc: ControllerComponents)(implicit
   ec: ExecutionContext
 ) extends BaseCustomsServiceStatusController(cc) {
-  def updateWithUnplannedOutage(): Action[JsValue] =
+  def updateWithOutageData(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
-      validateJson[UnplannedOutageData] { unplannedOutageData =>
+      validateJson[OutageData] { outageData =>
         adminCustomsServiceStatusService
-          .submitUnplannedOutage(unplannedOutageData)
+          .submitOutage(outageData)
           .map {
             case Left(error) =>
-              logger.error(s"Unplanned outage with internal reference ${unplannedOutageData.internalReference} could not be written to the database")
+              logger.error(s"Unplanned outage with internal reference ${outageData.internalReference.text} could not be written to the database")
               InternalServerError
             case Right(_) => Ok
           }
       }
     }
+
+  def getLatestOutage: Action[AnyContent] = Action.async { _ =>
+    adminCustomsServiceStatusService.getLatestOutage.map {
+      case Some(result) => Ok(Json.toJson(result))
+      case None         => NotFound
+    }
+  }
 }

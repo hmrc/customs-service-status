@@ -19,9 +19,11 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes as testRoutes}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageType.Unplanned
 
 import java.time.Instant
+import java.util.UUID
 
 class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
 
@@ -32,18 +34,24 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     await(testController.clearAllData(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
+  private val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
 
-  private val validUnplannedOutageData: UnplannedOutageData = UnplannedOutageData(
-    InternalReference("Testing reference"),
-    Preview("Testing additional details"),
-    Instant.parse("2025-01-01T00:00:00.000Z"),
-    None
+  private val validOutageData: OutageData = OutageData(
+    id = UUID.randomUUID(),
+    outageType = Unplanned,
+    internalReference = InternalReference("Test reference"),
+    startDateTime = Instant.now(),
+    endDateTime = None,
+    details = Details("Test details"),
+    publishedDateTime = Instant.now(),
+    clsNotes = Some("Notes for CLS users")
   )
+
+  private val anotherValidOutageData: OutageData = validOutageData.copy(id = UUID.randomUUID())
 
   "submitUnplannedOutage" should {
     "create an entry in the database with a valid request" in {
-      val result = await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
+      val result = await(adminCustomsServiceStatusRepository.submitOutage(validOutageData))
       result.wasAcknowledged() shouldBe true
     }
   }
@@ -55,8 +63,8 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     }
 
     "return all the customsServiceStatus entries in the database" in {
-      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
-      await(adminCustomsServiceStatusRepository.submitUnplannedOutage(validUnplannedOutageData))
+      await(adminCustomsServiceStatusRepository.submitOutage(validOutageData))
+      await(adminCustomsServiceStatusRepository.submitOutage(anotherValidOutageData))
       val result = await(adminCustomsServiceStatusRepository.findAll())
       result.size shouldBe 2
     }

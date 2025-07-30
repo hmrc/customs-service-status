@@ -19,7 +19,7 @@ package uk.gov.hmrc.customsservicestatus.services.test
 import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, CustomsServiceStatusRepository}
 import uk.gov.hmrc.play.http.logging.Mdc
 import org.mongodb.scala.SingleObservableFuture
-import uk.gov.hmrc.customsservicestatus.models.UnplannedOutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ class TestService @Inject() (
   adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
 )(implicit ec: ExecutionContext) {
 
-  def listAll: Future[List[UnplannedOutageData]] = adminCustomsServiceStatusRepository.findAll()
+  def listAll: Future[List[OutageData]] = adminCustomsServiceStatusRepository.findAll()
 
   def clearAllData: Future[Unit] =
     for {

@@ -33,16 +33,18 @@ class AdminCustomsStatusService @Inject() (
   val executionContext: ExecutionContext
 ) {
 
-  def submitUnplannedOutage(
-    unplannedOutageData: UnplannedOutageData
+  def submitOutage(
+    outage: OutageData
   ): Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] =
     adminCustomsServiceStatusRepository
-      .submitUnplannedOutage(
-        unplannedOutageData
+      .submitOutage(
+        outage
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
         case _                                  => Left(AdminCustomsServiceStatusInsertError)
       }
+
+  def getLatestOutage: Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest
 
 }
