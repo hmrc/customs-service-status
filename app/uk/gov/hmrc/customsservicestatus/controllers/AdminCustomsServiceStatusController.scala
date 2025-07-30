@@ -51,7 +51,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
     adminCustomsServiceStatusService.findOutage(id).map(outage => Ok(Json.toJson(outage)))
   }
 
-  def deleteOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+  def archiveOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
     adminCustomsServiceStatusService.deleteOutage(id).map {
       case Left(error) =>
         logger.error(s"Outage with id $id could not be deleted from the database")
