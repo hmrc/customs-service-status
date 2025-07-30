@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
 import javax.inject.{Inject, Singleton}
@@ -42,8 +42,8 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
       }
     }
 
-  def getLatestOutage: Action[AnyContent] = Action.async { _ =>
-    adminCustomsServiceStatusService.getLatestOutage.map {
+  def getLatestOutage(outageType: OutageType): Action[AnyContent] = Action.async { _ =>
+    adminCustomsServiceStatusService.getLatestOutage(outageType).map {
       case Some(result) => Ok(Json.toJson(result))
       case None         => NotFound
     }

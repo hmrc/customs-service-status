@@ -67,13 +67,13 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
   "getLatestOutage" should {
     "return the latest UnplannedOutageData" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.getLatest).thenReturn(Future.successful(validOutageData))
-      val result: Future[Option[OutageData]] = service.getLatestOutage
+      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(validOutageData))
+      val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
       result.futureValue shouldBe validOutageData
     }
     "return 404 where there is no UnplannedOutageData" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.getLatest).thenReturn(Future.successful(None))
-      val result: Future[Option[OutageData]] = service.getLatestOutage
+      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(None))
+      val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
       result.futureValue shouldBe None
     }
   }

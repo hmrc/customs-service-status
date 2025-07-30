@@ -18,6 +18,7 @@ package uk.gov.hmrc.customsservicestatus.models
 
 import play.api.i18n.Messages
 import play.api.libs.json.*
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 enum OutageType {
   case Unplanned
@@ -42,4 +43,16 @@ object OutageType {
 
     override def writes(o: OutageType): JsValue = JsString(o.toString)
   }
+
+  implicit lazy val pathBindable: PathBindable[OutageType] = new PathBindable[OutageType] {
+
+    override def bind(key: String, value: String): Either[String, OutageType] =
+      implicitly[PathBindable[String]].bind(key, value).map(OutageType.valueOf)
+
+    override def unbind(key: String, outageType: OutageType): String =
+      outageType.value
+  }
+
+  implicit def queryParamBindable(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[OutageType] =
+    stringBinder.transform(OutageType.valueOf, _.value)
 }

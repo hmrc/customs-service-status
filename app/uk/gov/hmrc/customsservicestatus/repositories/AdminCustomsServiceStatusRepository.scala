@@ -19,7 +19,8 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.model.*
-import uk.gov.hmrc.customsservicestatus.models.OutageData
+import org.mongodb.scala.model.Filters._
+import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
@@ -50,6 +51,12 @@ class AdminCustomsServiceStatusRepository @Inject() (
 
   def findAll(): Future[List[OutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
 
-  def getLatest: Future[Option[OutageData]] =
-    Mdc.preservingMdc(collection.find().sort(Sorts.descending("publishedDateTime")).limit(1).headOption())
+  def getLatest(outageType: OutageType): Future[Option[OutageData]] =
+    Mdc.preservingMdc(
+      collection
+        .find(and(equal("outageType", outageType.toString)))
+        .sort(Sorts.descending("publishedDateTime"))
+        .limit(1)
+        .headOption()
+    )
 }

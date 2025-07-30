@@ -62,13 +62,13 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   "getLatestOutage" should {
     "return correct json for an UnplannedOutageData" in {
-      when(mockAdminCustomsStatusService.getLatestOutage).thenReturn(Future.successful(Some(validOutageData)))
-      val result = controller.getLatestOutage()(FakeRequest().withBody(Json.toJson[OutageData](validOutageData)))
+      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(Some(validOutageData)))
+      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(Json.toJson[OutageData](validOutageData)))
       status(result) shouldBe OK
     }
     "return 404 when there is no UnplannedOutageData" in {
-      when(mockAdminCustomsStatusService.getLatestOutage).thenReturn(Future.successful(None))
-      val result = controller.getLatestOutage()(FakeRequest().withBody(None))
+      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(None))
+      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(None))
       status(result) shouldBe NOT_FOUND
     }
   }

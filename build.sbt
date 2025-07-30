@@ -19,7 +19,8 @@ lazy val microservice = Project("customs-service-status", file("."))
     // suppress warnings in generated routes files
     scalacOptions += "-Wconf:src=routes/.*:s",
     routesImport ++= Seq(
-      "java.util.UUID"
+      "java.util.UUID",
+      "uk.gov.hmrc.customsservicestatus.models._"
     ),
     playDefaultPort := 8991,
     scalafmtOnCompile := true

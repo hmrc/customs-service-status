@@ -45,6 +45,6 @@ class AdminCustomsStatusService @Inject() (
         case _                                  => Left(AdminCustomsServiceStatusInsertError)
       }
 
-  def getLatestOutage: Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest
+  def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest(outageType)
 
 }
