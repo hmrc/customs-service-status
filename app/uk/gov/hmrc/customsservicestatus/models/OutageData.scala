@@ -38,7 +38,6 @@ object OutageData {
 
   val mongoFormat: OFormat[OutageData] = {
     implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-    implicit val uuidFormat:    Format[UUID]    = MongoUuidFormats.uuidFormat
     Json.format[OutageData]
   }
 
