@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.customsservicestatus.repositories
 
+import cats.data.OptionT
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
-import org.mongodb.scala.bson.BsonBinary
 import org.mongodb.scala.model.*
 import org.mongodb.scala.model.Filters.equal
-import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
 
@@ -58,14 +58,14 @@ class AdminCustomsServiceStatusRepository @Inject() (
 
   def find(id: UUID): Future[Option[OutageData]] = Mdc.preservingMdc(collection.find(equal("id", id.toBson)).headOption())
 
-  def archive(id: UUID): Future[Option[OutageData]] =
-    for {
-      maybeOutageData <- find(id)
-      if maybeOutageData.nonEmpty
-      archivedResult <- archivedOutagesRepository.addToArchived(maybeOutageData.get)
+  def archive(id: UUID): Future[Option[OutageData]] = {
+    val maybeArchivedOutageData: OptionT[Future, OutageData] = for {
+      outageData     <- OptionT(find(id))
+      archivedResult <- OptionT.liftF(archivedOutagesRepository.addToArchived(outageData))
       if archivedResult.wasAcknowledged() && !archivedResult.getInsertedId.isNull
-    } yield {
-      Mdc.preservingMdc(collection.deleteOne(equal("id", id.toBson)).toFuture())
-      maybeOutageData
-    }
+      deleteResult <- OptionT.liftF(Mdc.preservingMdc(collection.deleteOne(equal("id", id.toBson)).toFuture()))
+      if deleteResult.wasAcknowledged() && deleteResult.getDeletedCount == 1
+    } yield outageData
+    maybeArchivedOutageData.value
+  }
 }
