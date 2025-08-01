@@ -19,8 +19,8 @@ package uk.gov.hmrc.customsservicestatus.repositories
 import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes as testRoutes}
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.customsservicestatus.models.OutageData
-import uk.gov.hmrc.customsservicestatus.models.OutageType.Unplanned
+import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
+import uk.gov.hmrc.customsservicestatus.models.OutageType.{Planned, Unplanned}
 
 import java.time.Instant
 import java.util.UUID
@@ -36,22 +36,32 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
 
   val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
 
-  private val unplannedOutage: OutageData = OutageData(
+  def fakeOutage(outageType: OutageType, endDateTime: Option[Instant]): OutageData = OutageData(
     id = UUID.randomUUID(),
-    outageType = Unplanned,
+    outageType = outageType,
     internalReference = InternalReference("Test reference"),
     startDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    endDateTime = None,
+    endDateTime = endDateTime,
     details = Details("Test details"),
     publishedDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
     clsNotes = Some("Notes for CLS users")
   )
 
-  private val anotherUnplannedOutage: OutageData = unplannedOutage.copy(id = UUID.randomUUID())
+  val fakeId: UUID = UUID.randomUUID()
+
+  val fakeDate: Instant = Instant.parse("2027-01-01T00:00:00.000Z")
+
+  private val fakeUnplannedOutage: OutageData = fakeOutage(Unplanned, None)
+  private val fakePlannedOutage:   OutageData = fakeOutage(Planned, None)
 
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
-      val result = await(adminCustomsServiceStatusRepository.submitOutage(unplannedOutage))
+      val result = await(adminCustomsServiceStatusRepository.submitOutage(fakeOutage(Unplanned, None)))
+      result.wasAcknowledged() shouldBe true
+    }
+
+    "create a planned outage in the database with a valid request" in {
+      val result = await(adminCustomsServiceStatusRepository.submitOutage(fakeOutage(Planned, Some(fakeDate))))
       result.wasAcknowledged() shouldBe true
     }
   }
@@ -62,9 +72,23 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
       result.size shouldBe 0
     }
 
-    "return all the customsServiceStatus entries in the database" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(unplannedOutage))
-      await(adminCustomsServiceStatusRepository.submitOutage(anotherUnplannedOutage))
+    "return all the customsServiceStatus entries in the database (unplanned)" in {
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutage(Unplanned, None)))
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
+      val result = await(adminCustomsServiceStatusRepository.findAll())
+      result.size shouldBe 2
+    }
+
+    "return all the customsServiceStatus entries in the database (planned)" in {
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutage(Planned, Some(fakeDate))))
+      await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedOutage))
+      val result = await(adminCustomsServiceStatusRepository.findAll())
+      result.size shouldBe 2
+    }
+
+    "return all the customsServiceStatus entries in the database (unplanned and planned)" in {
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutage(Planned, Some(fakeDate))))
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
       val result = await(adminCustomsServiceStatusRepository.findAll())
       result.size shouldBe 2
     }

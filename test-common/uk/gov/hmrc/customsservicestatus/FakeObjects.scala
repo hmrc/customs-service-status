@@ -32,12 +32,14 @@ trait FakeObjects {
 
   val fakeNotes: Option[String] = Some("Notes")
 
-  def fakeOutageData(outageType: OutageType): OutageData = OutageData(
+  val fakeDate: Instant = Instant.parse("2027-01-01T00:00:00.000Z")
+
+  def fakeOutageData(outageType: OutageType, endDateTime: Option[Instant]): OutageData = OutageData(
     id = fakeId,
     outageType = outageType,
     internalReference = fakeInternalReference,
     startDateTime = Instant.now(),
-    endDateTime = None,
+    endDateTime = endDateTime,
     details = fakeDetails,
     publishedDateTime = Instant.now(),
     clsNotes = fakeNotes

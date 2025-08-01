@@ -37,16 +37,32 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   }
 
   "submitOutage" should {
-    "return a Right containing Unit given valid unplanned outage data" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
-      val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned))
-      result.futureValue shouldBe Right(())
+    "return a Right containing Unit" when {
+      "valid unplanned outage data parsed" in new Setup {
+        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned, None))
+        result.futureValue shouldBe Right(())
+      }
+
+      "valid planned outage data parsed" in new Setup {
+        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Planned, Some(fakeDate)))
+        result.futureValue shouldBe Right(())
+      }
     }
 
-    "return a Left with an error if the insert was not acknowledged" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
-      val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned))
-      result.futureValue shouldBe Left(OutageError.OutageInsertError)
+    "return a Left with an error if the insert was not acknowledged" when {
+      "valid unplanned outage data parsed" in new Setup {
+        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned, None))
+        result.futureValue shouldBe Left(OutageError.OutageInsertError)
+      }
+
+      "valid planned outage data parsed" in new Setup {
+        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Planned, Some(fakeDate)))
+        result.futureValue shouldBe Left(OutageError.OutageInsertError)
+      }
     }
   }
 }

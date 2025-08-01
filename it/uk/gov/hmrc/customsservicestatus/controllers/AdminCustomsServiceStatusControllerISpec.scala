@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.customsservicestatus.controllers.test.routes as testRoutes
 import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
-import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
@@ -36,23 +36,27 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  private val unplannedOutage: OutageData = OutageData(
-    id = UUID.randomUUID(),
-    outageType = Unplanned,
+  def fakeOutage(outageType: OutageType, endDateTime: Option[Instant]): OutageData = OutageData(
+    id = fakeId,
+    outageType = outageType,
     internalReference = InternalReference("Test reference"),
     startDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    endDateTime = None,
+    endDateTime = endDateTime,
     details = Details("Test details"),
     publishedDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
     clsNotes = Some("Notes for CLS users")
   )
 
+  val fakeId: UUID = UUID.randomUUID()
+
+  val fakeDate: Instant = Instant.parse("2027-01-01T00:00:00.000Z")
+
   "POST /services/messages" should {
-    "return None if the information insert to the database was acknowledged" in {
+    "return None if the information insert to the database was acknowledged (unplanned)" in {
       val result =
         await(
           callRoute(
-            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(unplannedOutage))
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeOutage(Unplanned, None)))
           )
         )
 
@@ -60,7 +64,22 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       result.header.status                           shouldBe OK
       status(findResult)                             shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]] shouldBe List(unplannedOutage)
+      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeOutage(Unplanned, None))
+    }
+
+    "return None if the information insert to the database was acknowledged (planned)" in {
+      val result =
+        await(
+          callRoute(
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeOutage(Planned, Some(fakeDate))))
+          )
+        )
+
+      val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
+
+      result.header.status                           shouldBe OK
+      status(findResult)                             shouldBe OK
+      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeOutage(Planned, Some(fakeDate)))
     }
 
     "return a 400 if the information insert was unsuccessful" in {
