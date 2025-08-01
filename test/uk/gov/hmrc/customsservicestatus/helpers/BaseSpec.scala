@@ -27,6 +27,7 @@ import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.customsservicestatus.FakeObjects
 
 import scala.concurrent.ExecutionContext
 
@@ -40,6 +41,7 @@ trait BaseSpec
     with OptionValues
     with Configs
     with AllMocks
+    with FakeObjects
     with Status {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global

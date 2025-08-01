@@ -16,19 +16,29 @@
 
 package uk.gov.hmrc.customsservicestatus.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.*
 
-sealed trait DetailType
+enum OutageType {
+  case Unplanned
+  case Planned
 
-object DetailType {
-  final case class InternalReference(text: String) extends DetailType
-  final case class Details(html: String) extends DetailType
+  val value: String = toString
 
-  object InternalReference {
-    implicit val format: OFormat[InternalReference] = Json.format[InternalReference]
-  }
+}
 
-  object Details {
-    implicit val format: OFormat[Details] = Json.format[Details]
+object OutageType {
+
+  def apply(value: String): Option[OutageType] =
+    values.find(_.value == value)
+
+  def unapply(outageType: OutageType): String =
+    outageType.value
+
+  implicit val outageTypeFormat: Format[OutageType] = new Format[OutageType] {
+    override def reads(json: JsValue): JsResult[OutageType] =
+      try json.validate[String] map OutageType.valueOf
+      catch case e: IllegalArgumentException => JsError("Invalid OutageType")
+
+    override def writes(o: OutageType): JsValue = JsString(o.toString)
   }
 }

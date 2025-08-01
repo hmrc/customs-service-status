@@ -16,4 +16,9 @@
 
 package uk.gov.hmrc.customsservicestatus.errorhandlers
 
-case object AdminCustomsServiceStatusInsertError
+sealed trait OutageError
+
+object OutageError {
+  case object OutageInsertError extends OutageError
+  case object OutageDeleteError extends OutageError
+}
