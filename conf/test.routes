@@ -1,2 +1,2 @@
-GET           /clear-all                            uk.gov.hmrc.customsservicestatus.controllers.test.TestController.clearAllData
+GET           /clear-all                  uk.gov.hmrc.customsservicestatus.controllers.test.TestController.clearAllData
 GET           /services/messages          uk.gov.hmrc.customsservicestatus.controllers.test.TestController.list()
