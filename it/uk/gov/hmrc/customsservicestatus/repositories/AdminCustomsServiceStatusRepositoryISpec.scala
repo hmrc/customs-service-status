@@ -42,7 +42,7 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     internalReference = InternalReference("Test reference"),
     startDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
     endDateTime = endDateTime,
-    details = Details("Test details"),
+    commsText = CommsText("Test details"),
     publishedDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
     clsNotes = Some("Notes for CLS users")
   )

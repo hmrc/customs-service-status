@@ -28,7 +28,7 @@ trait FakeObjects {
 
   val fakeInternalReference: InternalReference = InternalReference("Test reference")
 
-  val fakeDetails: Details = Details("Test details")
+  val fakeDetails: CommsText = CommsText("Test details")
 
   val fakeNotes: Option[String] = Some("Notes")
 
@@ -40,7 +40,7 @@ trait FakeObjects {
     internalReference = fakeInternalReference,
     startDateTime = Instant.now(),
     endDateTime = endDateTime,
-    details = fakeDetails,
+    commsText = fakeDetails,
     publishedDateTime = Instant.now(),
     clsNotes = fakeNotes
   )
