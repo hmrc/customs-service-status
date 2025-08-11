@@ -23,20 +23,26 @@ import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.services.{AdminCustomsStatusService, CustomsServiceStatusService}
+import uk.gov.hmrc.customsservicestatus.repositories.{CustomsServiceStatusRepository, PlannedWorkRepository}
+import uk.gov.hmrc.customsservicestatus.services.{CustomsServiceStatusService, PlannedWorkService}
 
 trait AllMocks extends MockitoSugar { me: BeforeAndAfterEach =>
   val mockAdminCustomsStatusService:           AdminCustomsStatusService           = mock[AdminCustomsStatusService]
   val mockCheckService:                        CustomsServiceStatusService         = mock[CustomsServiceStatusService]
   val mockCustomsServiceStatusRepository:      CustomsServiceStatusRepository      = mock[CustomsServiceStatusRepository]
+  val mockPlannedWorkService:                  PlannedWorkService                  = mock[PlannedWorkService]
   val mockConfig:                              Configuration                       = mock[Configuration]
   val mockAdminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = mock[AdminCustomsServiceStatusRepository]
+  val mockPlannedWorkRepository:               PlannedWorkRepository               = mock[PlannedWorkRepository]
 
   override protected def beforeEach(): Unit =
     Seq[Any](
       mockAdminCustomsStatusService,
       mockCheckService,
+      mockPlannedWorkService,
       mockConfig,
       mockCustomsServiceStatusRepository,
-      mockAdminCustomsServiceStatusRepository
+      mockAdminCustomsServiceStatusRepository,
+      mockPlannedWorkRepository
     ).foreach(Mockito.reset(_))
 }
