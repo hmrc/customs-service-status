@@ -25,6 +25,7 @@ import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
@@ -36,27 +37,15 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  def fakeOutage(outageType: OutageType, endDateTime: Option[Instant]): OutageData = OutageData(
-    id = fakeId,
-    outageType = outageType,
-    internalReference = InternalReference("Test reference"),
-    startDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    endDateTime = endDateTime,
-    commsText = CommsText("Test details"),
-    publishedDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    clsNotes = Some("Notes for CLS users")
-  )
-
-  val fakeId: UUID = UUID.randomUUID()
-
-  val fakeDate: Instant = Instant.parse("2027-01-01T00:00:00.000Z")
+  private val fakeUnplannedOutage = fakeOutageData(Unplanned, None)
+  private val fakePlannedOutage = fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS)))
 
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged (unplanned)" in {
       val result =
         await(
           callRoute(
-            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeOutage(Unplanned, None)))
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeUnplannedOutage))
           )
         )
 
@@ -64,14 +53,15 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       result.header.status                           shouldBe OK
       status(findResult)                             shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeOutage(Unplanned, None))
+      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeUnplannedOutage)
     }
 
     "return None if the information insert to the database was acknowledged (planned)" in {
       val result =
         await(
           callRoute(
-            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeOutage(Planned, Some(fakeDate))))
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData())
+              .withBody(Json.toJson(fakePlannedOutage))
           )
         )
 
@@ -79,7 +69,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       result.header.status                           shouldBe OK
       status(findResult)                             shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeOutage(Planned, Some(fakeDate)))
+      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakePlannedOutage)
     }
 
     "return a 400 if the information insert was unsuccessful" in {
@@ -92,6 +82,34 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
       )
       status(result) shouldBe BAD_REQUEST
     }
+  }
 
+  "GET /services/planned-work" should {
+    "return Ok with empty list" when {
+      "there are no corresponding entries in the db" in {
+
+        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getPlannedWork()))
+        val plannedWork = contentAsJson(result).as[List[OutageData]]
+
+        status(result) shouldBe OK
+        plannedWork    shouldBe List()
+      }
+    }
+
+    "return Ok with a list of 2 valid planned outages" when {
+      "given three outages and an end date in the past" in {
+        fakePlannedWorks.map(o =>
+          await(callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(o))))
+        )
+
+        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getPlannedWork()))
+        val plannedWork = contentAsJson(result).as[List[OutageData]]
+        val allEntries = testController.list()(fakeRequest(testRoutes.TestController.list()))
+
+        status(result) shouldBe OK
+        contentAsJson(allEntries).as[List[OutageData]].size shouldBe 3
+        plannedWork.size    shouldBe 2
+      }
+    }
   }
 }

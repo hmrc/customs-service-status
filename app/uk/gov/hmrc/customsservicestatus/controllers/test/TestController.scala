@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.controllers.test
 
 import com.google.inject.*
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.*
 import uk.gov.hmrc.customsservicestatus.controllers.BaseCustomsServiceStatusController
 import uk.gov.hmrc.customsservicestatus.services.test.TestService
