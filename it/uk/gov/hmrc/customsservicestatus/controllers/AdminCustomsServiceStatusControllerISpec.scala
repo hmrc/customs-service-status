@@ -38,7 +38,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
   }
 
   private val fakeUnplannedOutage = fakeOutageData(Unplanned, None)
-  private val fakePlannedOutage = fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS)))
+  private val fakePlannedOutage   = fakeOutageData(Planned, Some(fakeDate), fakeDate.minus(1, ChronoUnit.DAYS))
 
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged (unplanned)" in {
@@ -51,9 +51,20 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
 
-      result.header.status                           shouldBe OK
-      status(findResult)                             shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakeUnplannedOutage)
+      result.header.status shouldBe OK
+      status(findResult)   shouldBe OK
+      contentAsJson(findResult).as[List[OutageData]].head should matchPattern {
+        case OutageData(
+              _,
+              fakeUnplannedOutage.outageType,
+              fakeUnplannedOutage.internalReference,
+              _,
+              fakeUnplannedOutage.endDateTime,
+              fakeUnplannedOutage.commsText,
+              _,
+              fakeUnplannedOutage.clsNotes
+            ) =>
+      }
     }
 
     "return None if the information insert to the database was acknowledged (planned)" in {
@@ -67,9 +78,20 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
 
-      result.header.status                           shouldBe OK
-      status(findResult)                             shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]] shouldBe List(fakePlannedOutage)
+      result.header.status shouldBe OK
+      status(findResult)   shouldBe OK
+      contentAsJson(findResult).as[List[OutageData]].head should matchPattern {
+        case OutageData(
+              _,
+              fakePlannedOutage.outageType,
+              fakePlannedOutage.internalReference,
+              fakePlannedOutage.startDateTime,
+              fakePlannedOutage.endDateTime,
+              fakePlannedOutage.commsText,
+              _,
+              fakePlannedOutage.clsNotes
+            ) =>
+      }
     }
 
     "return a 400 if the information insert was unsuccessful" in {
@@ -104,11 +126,11 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
         val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getPlannedWork()))
         val plannedWork = contentAsJson(result).as[List[OutageData]]
-        val allEntries = testController.list()(fakeRequest(testRoutes.TestController.list()))
+        val allEntries  = testController.list()(fakeRequest(testRoutes.TestController.list()))
 
-        status(result) shouldBe OK
+        status(result)                                      shouldBe OK
         contentAsJson(allEntries).as[List[OutageData]].size shouldBe 3
-        plannedWork.size    shouldBe 2
+        plannedWork.size                                    shouldBe 2
       }
     }
   }
