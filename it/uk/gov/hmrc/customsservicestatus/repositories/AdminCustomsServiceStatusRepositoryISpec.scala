@@ -38,6 +38,7 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
   val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
 
   private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
+  private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
 
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
@@ -66,10 +67,16 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     }
 
     "return all the outage entries whose end date is in the future" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutageData(Planned, Some(Instant.now().minus(1, ChronoUnit.DAYS)))))
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS)))))
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
+      val fixedFutureTime =
+        await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedOutage))
+      await(
+        adminCustomsServiceStatusRepository.submitOutage(
+          fakePlannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))).copy(id = UUID.randomUUID())
+        )
+      )
+
       val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
+      result.head shouldBe fakePlannedOutage
       result.size shouldBe 1
     }
 

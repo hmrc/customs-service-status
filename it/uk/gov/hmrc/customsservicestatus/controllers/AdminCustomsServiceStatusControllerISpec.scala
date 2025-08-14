@@ -107,8 +107,8 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
         val allEntries  = testController.list()(fakeRequest(testRoutes.TestController.list()))
 
         status(result)                                      shouldBe OK
-        contentAsJson(allEntries).as[List[OutageData]].size shouldBe 3
-        plannedWork.size                                    shouldBe 2
+        contentAsJson(allEntries).as[List[OutageData]].size shouldBe 4
+        plannedWork.size                                    shouldBe 3
       }
     }
   }
