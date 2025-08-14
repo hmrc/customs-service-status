@@ -74,21 +74,7 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     }
 
     "return all the outage entries sorted by their start date" in {
-      await(
-        adminCustomsServiceStatusRepository.submitOutage(
-          fakeOutageData(Planned, Some(Instant.now().plus(7, ChronoUnit.DAYS)), Instant.now().minus(2, ChronoUnit.DAYS))
-        )
-      )
-      await(
-        adminCustomsServiceStatusRepository.submitOutage(
-          fakeOutageData(Planned, Some(Instant.now().plus(7, ChronoUnit.DAYS)), Instant.now().minus(3, ChronoUnit.DAYS))
-        )
-      )
-      await(
-        adminCustomsServiceStatusRepository.submitOutage(
-          fakeOutageData(Planned, Some(Instant.now().plus(7, ChronoUnit.DAYS)), Instant.now().minus(1, ChronoUnit.DAYS))
-        )
-      )
+      fakePlannedWorks.map(plannedWork => await(adminCustomsServiceStatusRepository.submitOutage(plannedWork)))
       val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
       result.map(_.startDateTime) shouldBe sorted
     }

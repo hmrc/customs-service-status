@@ -38,7 +38,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
   }
 
   private val fakeUnplannedOutage = fakeOutageData(Unplanned, None)
-  private val fakePlannedOutage   = fakeOutageData(Planned, Some(fakeDate), fakeDate.minus(1, ChronoUnit.DAYS))
+  private val fakePlannedOutage   = fakeOutageData(Planned, Some(fakeDate))
 
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged (unplanned)" in {
@@ -51,20 +51,9 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
 
-      result.header.status shouldBe OK
-      status(findResult)   shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]].head should matchPattern {
-        case OutageData(
-              _,
-              fakeUnplannedOutage.outageType,
-              fakeUnplannedOutage.internalReference,
-              _,
-              fakeUnplannedOutage.endDateTime,
-              fakeUnplannedOutage.commsText,
-              _,
-              fakeUnplannedOutage.clsNotes
-            ) =>
-      }
+      result.header.status                                shouldBe OK
+      status(findResult)                                  shouldBe OK
+      contentAsJson(findResult).as[List[OutageData]].head shouldBe fakeUnplannedOutage
     }
 
     "return None if the information insert to the database was acknowledged (planned)" in {
@@ -78,20 +67,9 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       val findResult = callRoute(fakeRequest(testRoutes.TestController.list()))
 
-      result.header.status shouldBe OK
-      status(findResult)   shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]].head should matchPattern {
-        case OutageData(
-              _,
-              fakePlannedOutage.outageType,
-              fakePlannedOutage.internalReference,
-              fakePlannedOutage.startDateTime,
-              fakePlannedOutage.endDateTime,
-              fakePlannedOutage.commsText,
-              _,
-              fakePlannedOutage.clsNotes
-            ) =>
-      }
+      result.header.status                                shouldBe OK
+      status(findResult)                                  shouldBe OK
+      contentAsJson(findResult).as[List[OutageData]].head shouldBe fakePlannedOutage
     }
 
     "return a 400 if the information insert was unsuccessful" in {
