@@ -43,7 +43,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
       }
     }
 
-  def getPlannedWork: Action[AnyContent] = Action.async { implicit request =>
-    adminCustomsServiceStatusService.getPlannedWork.map(result => Ok(Json.toJson(result)))
+  def getAllPlannedWorks: Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.getAllPlannedWorks.map(result => Ok(Json.toJson(result)))
   }
 }

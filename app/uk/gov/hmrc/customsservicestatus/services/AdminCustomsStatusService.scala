@@ -46,7 +46,7 @@ class AdminCustomsStatusService @Inject() (
         case _                                  => Left(OutageError.OutageInsertError)
       }
 
-  def getPlannedWork: Future[Seq[OutageData]] =
+  def getAllPlannedWorks: Future[Seq[OutageData]] =
     adminCustomsServiceStatusRepository.findAllPlanned()
 
 }

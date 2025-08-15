@@ -88,7 +88,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     "return Ok with empty list" when {
       "there are no corresponding entries in the db" in {
 
-        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getPlannedWork()))
+        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getAllPlannedWorks()))
         val plannedWork = contentAsJson(result).as[List[OutageData]]
 
         status(result) shouldBe OK
@@ -102,7 +102,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
           await(callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(o))))
         )
 
-        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getPlannedWork()))
+        val result      = callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.getAllPlannedWorks()))
         val plannedWork = contentAsJson(result).as[List[OutageData]]
         val allEntries  = testController.list()(fakeRequest(testRoutes.TestController.list()))
 
