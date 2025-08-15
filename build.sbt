@@ -7,7 +7,7 @@ lazy val microservice = Project("customs-service-status", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     majorVersion := 0,
-    scalaVersion := "3.5.0",
+    scalaVersion := "3.6.4",
     ScoverageKeys.coverageExcludedFiles :=
       "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;" +
         "app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*",
@@ -24,7 +24,12 @@ lazy val microservice = Project("customs-service-status", file("."))
   )
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
+  .settings(
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
+    IntegrationTest / unmanagedSourceDirectories :=
+      (IntegrationTest / baseDirectory)(base => Seq(base / "it", base / "test-common")).value,
+    Test / unmanagedSourceDirectories := (Test / baseDirectory)(base => Seq(base / "test", base / "test-common")).value,
+  )
   .settings(
     addCommandAlias("runTestOnly", "run -Dplay.http.router=testOnlyDoNotUseInAppConf.Routes"),
     addCommandAlias("format", ";scalafmt;test:scalafmt;it:test::scalafmt"),

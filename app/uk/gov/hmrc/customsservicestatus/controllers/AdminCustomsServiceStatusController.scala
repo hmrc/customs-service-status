@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
-import play.api.libs.json.JsValue
-import play.api.mvc.{Action, ControllerComponents}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.OutageData.format
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
@@ -42,4 +42,8 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           }
       }
     }
+
+  def getAllPlannedWorks: Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.getAllPlannedWorks.map(result => Ok(Json.toJson(result)))
+  }
 }
