@@ -63,4 +63,14 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
       }
     }
   }
+
+  "getAllPlannedWorks" should {
+    "return OK and call the PlannedWorkService" in {
+
+      when(mockAdminCustomsStatusService.getAllPlannedWorks).thenReturn(Future[List[OutageData]](fakePlannedWorks))
+
+      val result = controller.getAllPlannedWorks(FakeRequest())
+      status(result) shouldBe OK
+    }
+  }
 }

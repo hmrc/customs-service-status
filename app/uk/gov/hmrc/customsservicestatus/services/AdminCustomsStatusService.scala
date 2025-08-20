@@ -24,6 +24,7 @@ import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRe
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import org.mongodb.scala.model.Sorts
 
 @Singleton
 class AdminCustomsStatusService @Inject() (
@@ -44,5 +45,8 @@ class AdminCustomsStatusService @Inject() (
         case insert if insert.wasAcknowledged() => Right(())
         case _                                  => Left(OutageError.OutageInsertError)
       }
+
+  def getAllPlannedWorks: Future[Seq[OutageData]] =
+    adminCustomsServiceStatusRepository.findAllPlanned()
 
 }

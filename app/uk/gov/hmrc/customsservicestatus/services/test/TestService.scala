@@ -36,7 +36,7 @@ class TestService @Inject() (
     for {
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
       _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.collection.drop().toFuture())
-      _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.ensureIndexes())
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes())
+      _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.ensureIndexes())
     } yield ()
 }
