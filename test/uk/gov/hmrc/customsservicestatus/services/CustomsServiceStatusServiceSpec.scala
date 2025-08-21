@@ -28,6 +28,7 @@ import java.time.Instant
 import scala.concurrent.Future
 
 class CustomsServiceStatusServiceSpec extends BaseSpec {
+
   "updateServiceStatus" should {
     "return Left ServiceNotConfiguredError if service is not configured" in {
       val serviceId = "myService"

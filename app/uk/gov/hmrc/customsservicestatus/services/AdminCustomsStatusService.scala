@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import com.google.inject.Singleton
 import play.api.Configuration
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
@@ -34,16 +34,19 @@ class AdminCustomsStatusService @Inject() (
 ) {
 
   def submitOutage(
-    outage: OutageData
-  ): Future[Either[AdminCustomsServiceStatusInsertError.type, Unit]] =
+    outageData: OutageData
+  ): Future[Either[OutageError, Unit]] =
     adminCustomsServiceStatusRepository
       .submitOutage(
-        outage
+        outageData
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
-        case _                                  => Left(AdminCustomsServiceStatusInsertError)
+        case _                                  => Left(OutageError.OutageInsertError)
       }
+
+  def getAllPlannedWorks: Future[Seq[OutageData]] =
+    adminCustomsServiceStatusRepository.findAllPlanned()
 
   def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest(outageType)
 

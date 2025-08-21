@@ -26,7 +26,9 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import uk.gov.hmrc.customsservicestatus.FakeObjects
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.customsservicestatus.FakeObjects
 
 import scala.concurrent.ExecutionContext
 
@@ -40,7 +42,8 @@ trait BaseSpec
     with OptionValues
     with Configs
     with AllMocks
-    with Status {
+    with Status
+    with FakeObjects {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc:           HeaderCarrier    = HeaderCarrier()

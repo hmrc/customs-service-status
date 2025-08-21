@@ -23,6 +23,8 @@ import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.services.{AdminCustomsStatusService, CustomsServiceStatusService}
+import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
+import uk.gov.hmrc.customsservicestatus.services.CustomsServiceStatusService
 
 trait AllMocks extends MockitoSugar { me: BeforeAndAfterEach =>
   val mockAdminCustomsStatusService:           AdminCustomsStatusService           = mock[AdminCustomsStatusService]

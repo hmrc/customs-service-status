@@ -22,13 +22,13 @@ sealed trait DetailType
 
 object DetailType {
   final case class InternalReference(text: String) extends DetailType
-  final case class Details(html: String) extends DetailType
+  final case class CommsText(html: String) extends DetailType
 
   object InternalReference {
     implicit val format: OFormat[InternalReference] = Json.format[InternalReference]
   }
 
-  object Details {
-    implicit val format: OFormat[Details] = Json.format[Details]
+  object CommsText {
+    implicit val format: OFormat[CommsText] = Json.format[CommsText]
   }
 }

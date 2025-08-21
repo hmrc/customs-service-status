@@ -21,49 +21,66 @@ import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, stubControllerComponents}
-import uk.gov.hmrc.customsservicestatus.errorhandlers.AdminCustomsServiceStatusInsertError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
-import uk.gov.hmrc.customsservicestatus.models.DetailType.*
+import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
-import uk.gov.hmrc.customsservicestatus.models.OutageType.Unplanned
+import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
-import java.time.Instant
-import java.util.UUID
 import scala.concurrent.Future
 
 class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
+
   val controller = new AdminCustomsServiceStatusController(mockAdminCustomsStatusService, stubControllerComponents())
 
-  val validOutageData: OutageData = OutageData(
-    id = UUID.randomUUID(),
-    outageType = Unplanned,
-    internalReference = InternalReference("Test reference"),
-    startDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    endDateTime = None,
-    details = Details("Test details"),
-    publishedDateTime = Instant.parse("2025-01-01T00:00:00.000Z"),
-    clsNotes = Some("Notes for CLS users")
-  )
+  private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
 
-  "submitUnplannedOutage" should {
-    "validate a correct request json and call the service with a valid case class instance" in {
-      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Right(())))
-      val result =
-        controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](validOutageData)))
-      status(result) shouldBe OK
+  "submitOutage" should {
+    "validate a correct request json and call the service" when {
+      "a valid unplanned outage instance parsed" in {
+        when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Right(())))
+        val result = controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(Unplanned, None))))
+        status(result) shouldBe OK
+      }
+
+      "a valid planned outage instance parsed" in {
+        when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Right(())))
+        val result = controller.updateWithOutageData()(
+          FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(Planned, Some(fakeDate))))
+        )
+        status(result) shouldBe OK
+      }
     }
-    "return an InternalServerError status when the service returns an error" in {
-      when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(AdminCustomsServiceStatusInsertError)))
-      val result =
-        controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](validOutageData)))
-      status(result) shouldBe INTERNAL_SERVER_ERROR
+
+    "return an InternalServerError status when the service returns an error" when {
+      "a valid unplanned outage instance parsed" in {
+        when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(OutageError.OutageInsertError)))
+        val result = controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(Unplanned, None))))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "a valid planned outage instance parsed" in {
+        when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(OutageError.OutageInsertError)))
+        val result = controller.updateWithOutageData()(FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(Planned, Some(fakeDate)))))
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "getAllPlannedWorks" should {
+    "return OK and call the PlannedWorkService" in {
+
+      when(mockAdminCustomsStatusService.getAllPlannedWorks).thenReturn(Future[List[OutageData]](fakePlannedWorks))
+
+      val result = controller.getAllPlannedWorks(FakeRequest())
+      status(result) shouldBe OK
     }
   }
 
   "getLatestOutage" should {
     "return correct json for an UnplannedOutageData" in {
-      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(Some(validOutageData)))
-      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(Json.toJson[OutageData](validOutageData)))
+      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(Some(fakeUnplannedOutage)))
+      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(Json.toJson[OutageData](fakeUnplannedOutage)))
       status(result) shouldBe OK
     }
     "return 404 when there is no UnplannedOutageData" in {

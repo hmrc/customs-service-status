@@ -29,7 +29,7 @@ case class OutageData(
   internalReference: InternalReference,
   startDateTime:     Instant,
   endDateTime:       Option[Instant] = None,
-  details:           Details,
+  commsText:         CommsText,
   publishedDateTime: Instant,
   clsNotes:          Option[String] = None
 )

@@ -18,7 +18,9 @@ package uk.gov.hmrc.customsservicestatus.controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
+import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.OutageData.format
+import uk.gov.hmrc.customsservicestatus.models.OutageType
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
 import javax.inject.{Inject, Singleton}
@@ -35,12 +37,16 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           .submitOutage(outageData)
           .map {
             case Left(error) =>
-              logger.error(s"Unplanned outage with internal reference ${outageData.internalReference.text} could not be written to the database")
+              logger.error(s"Outage with internal reference ${outageData.internalReference} could not be written to the database")
               InternalServerError
             case Right(_) => Ok
           }
       }
     }
+
+  def getAllPlannedWorks: Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.getAllPlannedWorks.map(result => Ok(Json.toJson(result)))
+  }
 
   def getLatestOutage(outageType: OutageType): Action[AnyContent] = Action.async { _ =>
     adminCustomsServiceStatusService.getLatestOutage(outageType).map {
