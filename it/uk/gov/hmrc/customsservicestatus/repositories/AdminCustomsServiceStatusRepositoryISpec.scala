@@ -85,5 +85,12 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
       val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
       result.map(_.startDateTime) shouldBe sorted
     }
+
+    "return all the customsServiceStatus entries in the database" in {
+      await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedOutage))
+      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
+      val result = await(adminCustomsServiceStatusRepository.findAll())
+      result.size shouldBe 2
+    }
   }
 }

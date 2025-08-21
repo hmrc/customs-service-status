@@ -17,6 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.models
 
 import play.api.libs.json.*
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 enum OutageType {
   case Unplanned
@@ -41,4 +42,7 @@ object OutageType {
 
     override def writes(o: OutageType): JsValue = JsString(o.toString)
   }
+
+  implicit def queryParamBindable(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[OutageType] =
+    stringBinder.transform(OutageType.valueOf, _.value)
 }
