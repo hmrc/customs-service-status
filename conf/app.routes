@@ -4,4 +4,4 @@ PUT         /services/:id/status          uk.gov.hmrc.customsservicestatus.contr
 GET         /services                     uk.gov.hmrc.customsservicestatus.controllers.CustomsServiceStatusController.list()
 GET         /services/planned-work        uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.getAllPlannedWorks()
 POST        /services/messages            uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.updateWithOutageData()
-GET         /outages/latest             uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.getLatestOutage(outageType: OutageType)
+GET         /outages/latest               uk.gov.hmrc.customsservicestatus.controllers.AdminCustomsServiceStatusController.getLatestOutage(outageType: OutageType)

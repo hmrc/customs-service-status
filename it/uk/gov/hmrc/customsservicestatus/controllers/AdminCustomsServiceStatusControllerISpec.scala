@@ -22,12 +22,6 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
-import uk.gov.hmrc.customsservicestatus.models.OutageData
-import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-
-import java.time.Instant
-import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 

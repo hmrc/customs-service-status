@@ -68,15 +68,29 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   }
 
   "getLatestOutage" should {
-    "return the latest UnplannedOutageData" in new Setup {
+    "return the latest unplanned outage" in new Setup {
       val validOutageData = fakeOutageData(Unplanned, None)
       when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(validOutageData))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
       result.futureValue shouldBe validOutageData
     }
-    "return 404 where there is no UnplannedOutageData" in new Setup {
+
+    "return the latest planned outage" in new Setup {
+      val validOutageData = fakeOutageData(Planned, None)
+      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(validOutageData))
+      val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Planned)
+      result.futureValue shouldBe validOutageData
+    }
+
+    "return 404 where there is no unplanned outage" in new Setup {
       when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(None))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
+      result.futureValue shouldBe None
+    }
+
+    "return 404 where there is no planned outage" in new Setup {
+      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(None))
+      val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Planned)
       result.futureValue shouldBe None
     }
   }

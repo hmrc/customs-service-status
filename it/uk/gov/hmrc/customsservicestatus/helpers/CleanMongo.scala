@@ -29,10 +29,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-trait CleanMongo extends BeforeAndAfterAll { this: TestSuite with BaseOneAppPerSuite =>
+trait CleanMongo extends BeforeAndAfterAll { this: TestSuite & BaseOneAppPerSuite =>
 
   override protected def beforeAll(): Unit = {
-    lazy val repositories: Seq[PlayMongoRepository[_]] = Seq(
+    lazy val repositories: Seq[PlayMongoRepository[?]] = Seq(
       app.injector.instanceOf[CustomsServiceStatusRepository],
       app.injector.instanceOf[AdminCustomsServiceStatusRepository]
     )
