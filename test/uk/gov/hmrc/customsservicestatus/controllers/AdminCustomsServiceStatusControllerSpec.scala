@@ -21,11 +21,15 @@ import org.mockito.Mockito.when
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{status, stubControllerComponents}
-import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
+import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
+import java.time.Instant
+import java.util.UUID
 import scala.concurrent.Future
 
 class AdminCustomsServiceStatusControllerSpec extends BaseSpec {

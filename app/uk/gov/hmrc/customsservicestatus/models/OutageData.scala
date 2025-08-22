@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus.models
 
 import play.api.libs.json.*
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import uk.gov.hmrc.mongo.play.json.formats.{MongoJavatimeFormats, MongoUuidFormats}
 
 import java.time.Instant
 import java.util.UUID

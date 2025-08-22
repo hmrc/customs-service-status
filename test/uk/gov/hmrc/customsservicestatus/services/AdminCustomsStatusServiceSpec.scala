@@ -21,8 +21,11 @@ import org.bson.BsonValue
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
+import uk.gov.hmrc.customsservicestatus.models.DetailType.*
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 
 import scala.concurrent.Future
 

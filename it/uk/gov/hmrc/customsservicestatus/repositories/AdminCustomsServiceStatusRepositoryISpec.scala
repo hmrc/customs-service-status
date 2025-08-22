@@ -20,7 +20,7 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
-import uk.gov.hmrc.customsservicestatus.models.OutageType.{Planned, Unplanned}
+import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -35,7 +35,7 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     await(testController.clearAllData(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
+  private val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
 
   private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
   private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))

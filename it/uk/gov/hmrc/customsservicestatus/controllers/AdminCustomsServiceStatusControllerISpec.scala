@@ -23,6 +23,7 @@ import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
+import uk.gov.hmrc.customsservicestatus.models.OutageType.Unplanned
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
