@@ -18,11 +18,13 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import com.google.inject.Singleton
 import play.api.Configuration
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.models.*
 import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
 
 import javax.inject.Inject
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 import org.mongodb.scala.model.Sorts
 
@@ -35,18 +37,32 @@ class AdminCustomsStatusService @Inject() (
 ) {
 
   def submitOutage(
-    outageData: OutageData
+    outage: OutageData
   ): Future[Either[OutageError, Unit]] =
     adminCustomsServiceStatusRepository
       .submitOutage(
-        outageData
+        outage
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
-        case _                                  => Left(OutageError.OutageInsertError)
+        case _ => Left(OutageInsertError)
       }
 
   def getAllPlannedWorks: Future[Seq[OutageData]] =
     adminCustomsServiceStatusRepository.findAllPlanned()
 
+  def getPlannedWork: Future[Seq[OutageData]] =
+    adminCustomsServiceStatusRepository.findAllPlanned()
+
+  def findAllOutages(): Future[List[OutageData]] =
+    adminCustomsServiceStatusRepository.findAll()
+
+  def findOutage(id: UUID): Future[Option[OutageData]] =
+    adminCustomsServiceStatusRepository.find(id)
+
+  def deleteOutage(id: UUID): Future[Either[OutageError, OutageData]] =
+    adminCustomsServiceStatusRepository.archive(id).map {
+      case Some(outage) => Right(outage)
+      case _            => Left(OutageDeleteError)
+    }
 }
