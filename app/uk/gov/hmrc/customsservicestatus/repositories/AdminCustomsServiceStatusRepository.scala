@@ -21,7 +21,7 @@ import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters.{gte, equal}
+import org.mongodb.scala.model.Filters.{equal, gte}
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.mongo.MongoComponent

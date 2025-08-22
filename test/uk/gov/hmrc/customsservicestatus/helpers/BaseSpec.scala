@@ -27,9 +27,7 @@ import play.api.http.Status
 import uk.gov.hmrc.customsservicestatus.helpers.FakeObjects
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import uk.gov.hmrc.customsservicestatus.FakeObjects
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.customsservicestatus.FakeObjects
 
 import scala.concurrent.ExecutionContext
 

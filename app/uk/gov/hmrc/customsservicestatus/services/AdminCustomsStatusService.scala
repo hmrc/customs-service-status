@@ -45,7 +45,7 @@ class AdminCustomsStatusService @Inject() (
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
-        case _ => Left(OutageInsertError)
+        case _                                  => Left(OutageInsertError)
       }
 
   def getAllPlannedWorks: Future[Seq[OutageData]] =

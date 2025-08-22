@@ -20,29 +20,32 @@ import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.DetailType
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageType
+import uk.gov.hmrc.customsservicestatus.models.OutageType.*
+
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 trait FakeObjects {
 
-  val fakeId: UUID = UUID.randomUUID()
+  val fakeDate: Instant = Instant.parse("2020-01-01T00:00:00.000Z")
 
-  val fakeInternalReference: InternalReference = InternalReference("Test reference")
+  def fakeOutageData(outageType: OutageType, endDateTime: Option[Instant], startDateTime: Instant = fakeDate): OutageData =
+    OutageData(
+      id = UUID.randomUUID(),
+      outageType = outageType,
+      internalReference = InternalReference("Test reference"),
+      startDateTime = startDateTime,
+      endDateTime = endDateTime,
+      commsText = CommsText("Test details"),
+      publishedDateTime = fakeDate,
+      clsNotes = Some("Notes")
+    )
 
-  val fakeDetails: Details = Details("Test details")
-
-  val fakeNotes: Option[String] = Some("Notes")
-
-  val fakeOutageType: OutageType = OutageType.Unplanned
-
-  val fakeOutageData: OutageData = OutageData(
-    id = fakeId,
-    outageType = fakeOutageType,
-    internalReference = fakeInternalReference,
-    startDateTime = Instant.now(),
-    endDateTime = None,
-    details = fakeDetails,
-    publishedDateTime = Instant.now(),
-    clsNotes = fakeNotes
+  val fakePlannedWorks: List[OutageData] = List(
+    fakeOutageData(Planned, Some(Instant.now().plus(10, ChronoUnit.DAYS)), Instant.now().plus(6, ChronoUnit.DAYS)),
+    fakeOutageData(Planned, Some(Instant.now().plus(5, ChronoUnit.DAYS)), Instant.now().plus(2, ChronoUnit.DAYS)),
+    fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS))),
+    fakeOutageData(Planned, Some(Instant.now().minus(2, ChronoUnit.DAYS)), Instant.now().minus(3, ChronoUnit.DAYS))
   )
 }

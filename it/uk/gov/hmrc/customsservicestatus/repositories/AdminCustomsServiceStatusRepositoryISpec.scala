@@ -40,9 +40,6 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
   private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
   private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
 
-  private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
-  private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
-
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
       await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedWorks.head))
