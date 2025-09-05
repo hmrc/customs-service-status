@@ -16,37 +16,33 @@
 
 package uk.gov.hmrc.customsservicestatus.repositories
 
-import cats.data.OptionT
-import com.mongodb.client.model.Indexes.{ascending, descending}
+import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
-import org.mongodb.scala.bson.BsonDateTime
+import org.mongodb.scala.bson.BsonBinary
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters.{equal, gte}
-import uk.gov.hmrc.customsservicestatus.models.*
-import org.mongodb.scala.result.{DeleteResult, InsertOneResult}
+import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.result.InsertOneResult
+import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc
 
-import java.time.Instant
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AdminCustomsServiceStatusRepository @Inject() (
+class ArchivedOutagesRepository @Inject() (
   mongo: MongoComponent
 )(implicit executionContext: ExecutionContext)
     extends PlayMongoRepository[OutageData](
-      collectionName = "outages",
+      collectionName = "archived-outages",
       mongoComponent = mongo,
       domainFormat = OutageData.mongoFormat,
       indexes = Seq(
         IndexModel(ascending("id"), IndexOptions().name("serviceIdIdx").unique(true).sparse(true)),
-        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx")),
-        IndexModel(descending("endDateTime"), IndexOptions().name("endDateTimeIdx")),
-        IndexModel(ascending("startDateTime"), IndexOptions().name("startDateTimeIdx"))
+        IndexModel(ascending("lastUpdated"), IndexOptions().name("lastUpdatedIdx"))
       )
     ) {
 
@@ -57,21 +53,5 @@ class AdminCustomsServiceStatusRepository @Inject() (
         .toFuture()
     )
 
-  def find(id: UUID): Future[Option[OutageData]] = Mdc.preservingMdc(collection.find(equal("id", id.toBson)).headOption())
-
   def findAll(): Future[List[OutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
-
-  def findAllPlanned(): Future[List[OutageData]] = Mdc
-    .preservingMdc(
-      collection
-        .find(filter =
-          Filters.and(gte("endDateTime", BsonDateTime(Instant.now().toEpochMilli)), equal("outageType", OutageType.Planned.value.toBson))
-        )
-        .sort(Sorts.ascending("startDateTime"))
-        .toFuture()
-    )
-    .map(_.toList)
-
-  def delete(id: UUID): Future[DeleteResult] =
-    Mdc.preservingMdc(collection.deleteOne(equal("id", id.toBson)).toFuture())
 }

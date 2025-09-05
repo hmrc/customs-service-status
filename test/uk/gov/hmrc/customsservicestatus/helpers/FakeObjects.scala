@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsservicestatus
+package uk.gov.hmrc.customsservicestatus.helpers
 
+import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.DetailType
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
+import uk.gov.hmrc.customsservicestatus.models.OutageType
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
-import uk.gov.hmrc.customsservicestatus.models.*
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -46,4 +48,10 @@ trait FakeObjects {
     fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS))),
     fakeOutageData(Planned, Some(Instant.now().minus(2, ChronoUnit.DAYS)), Instant.now().minus(3, ChronoUnit.DAYS))
   )
+
+  val fakeUnplannedWorks: List[OutageData] = List(
+    fakeOutageData(Unplanned, None),
+    fakeOutageData(Unplanned, None)
+  )
+
 }

@@ -22,6 +22,7 @@ import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.OutageData.format
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -36,7 +37,7 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
           .submitOutage(outageData)
           .map {
             case Left(error) =>
-              logger.error(s"Outage with internal reference ${outageData.internalReference} could not be written to the database")
+              logger.error(s"Outage with internal reference ${outageData.internalReference.text} could not be written to the database")
               InternalServerError
             case Right(_) => Ok
           }
@@ -45,5 +46,17 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
 
   def getAllPlannedWorks: Action[AnyContent] = Action.async { implicit request =>
     adminCustomsServiceStatusService.getAllPlannedWorks.map(result => Ok(Json.toJson(result)))
+  }
+
+  def findAllOutages(): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.findAllOutages().map(result => Ok(Json.toJson(result)))
+  }
+
+  def findOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.findOutage(id).map(outage => Ok(Json.toJson(outage)))
+  }
+
+  def archiveOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.archiveOutage(id).map(outage => Ok(Json.toJson(outage)))
   }
 }
