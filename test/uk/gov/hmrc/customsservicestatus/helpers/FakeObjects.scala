@@ -48,4 +48,10 @@ trait FakeObjects {
     fakeOutageData(Planned, Some(Instant.now().plus(1, ChronoUnit.DAYS))),
     fakeOutageData(Planned, Some(Instant.now().minus(2, ChronoUnit.DAYS)), Instant.now().minus(3, ChronoUnit.DAYS))
   )
+
+  val fakeUnplannedWorks: List[OutageData] = List(
+    fakeOutageData(Unplanned, None),
+    fakeOutageData(Unplanned, None)
+  )
+
 }

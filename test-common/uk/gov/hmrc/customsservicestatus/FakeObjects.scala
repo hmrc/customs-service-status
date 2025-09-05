@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus
 
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
-import uk.gov.hmrc.customsservicestatus.models.{DetailType, OutageData, OutageType}
+import uk.gov.hmrc.customsservicestatus.models.*
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit

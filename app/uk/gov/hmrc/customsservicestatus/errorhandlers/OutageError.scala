@@ -20,5 +20,4 @@ sealed trait OutageError
 
 object OutageError {
   case object OutageInsertError extends OutageError
-  case object OutageDeleteError extends OutageError
 }

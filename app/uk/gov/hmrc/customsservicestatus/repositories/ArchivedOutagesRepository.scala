@@ -46,10 +46,12 @@ class ArchivedOutagesRepository @Inject() (
       )
     ) {
 
-  def addToArchived(outage: OutageData): Future[InsertOneResult] =
+  def submitOutage(outage: OutageData): Future[InsertOneResult] =
     Mdc.preservingMdc(
       collection
         .insertOne(outage)
         .toFuture()
     )
+
+  def findAll(): Future[List[OutageData]] = Mdc.preservingMdc(collection.find().toFuture()).map(_.toList)
 }

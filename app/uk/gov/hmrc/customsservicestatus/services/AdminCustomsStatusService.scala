@@ -18,20 +18,20 @@ package uk.gov.hmrc.customsservicestatus.services
 
 import com.google.inject.Singleton
 import play.api.Configuration
-import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
 import uk.gov.hmrc.customsservicestatus.models.*
-import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
+import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, ArchivedOutagesRepository}
 
-import javax.inject.Inject
 import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import org.mongodb.scala.model.Sorts
 
 @Singleton
 class AdminCustomsStatusService @Inject() (
   val config:                          Configuration,
-  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
+  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository,
+  archivedOutagesRepository:           ArchivedOutagesRepository
 )(implicit
   val executionContext: ExecutionContext
 ) {
@@ -51,18 +51,21 @@ class AdminCustomsStatusService @Inject() (
   def getAllPlannedWorks: Future[Seq[OutageData]] =
     adminCustomsServiceStatusRepository.findAllPlanned()
 
-  def getPlannedWork: Future[Seq[OutageData]] =
-    adminCustomsServiceStatusRepository.findAllPlanned()
-
   def findAllOutages(): Future[List[OutageData]] =
     adminCustomsServiceStatusRepository.findAll()
 
   def findOutage(id: UUID): Future[Option[OutageData]] =
     adminCustomsServiceStatusRepository.find(id)
 
-  def deleteOutage(id: UUID): Future[Either[OutageError, OutageData]] =
-    adminCustomsServiceStatusRepository.archive(id).map {
-      case Some(outage) => Right(outage)
-      case _            => Left(OutageDeleteError)
+  def archiveOutage(id: UUID): Future[Option[OutageData]] =
+    adminCustomsServiceStatusRepository.find(id).flatMap {
+      case Some(outage) =>
+        for {
+          insertResult <- archivedOutagesRepository.submitOutage(outage)
+          result <- if (insertResult.wasAcknowledged()) {
+                      adminCustomsServiceStatusRepository.delete(id).map(_ => Some(outage))
+                    } else Future.successful(None)
+        } yield result
+      case None => Future.successful(None)
     }
 }

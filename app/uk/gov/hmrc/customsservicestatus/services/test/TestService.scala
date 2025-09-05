@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.services.test
 
-import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, CustomsServiceStatusRepository}
+import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, ArchivedOutagesRepository, CustomsServiceStatusRepository}
 import uk.gov.hmrc.play.http.logging.Mdc
 import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.customsservicestatus.models.OutageData
@@ -27,15 +27,19 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TestService @Inject() (
   customsServiceStatusRepository:      CustomsServiceStatusRepository,
-  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
+  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository,
+  archivedOutagesRepository:           ArchivedOutagesRepository
 )(implicit ec: ExecutionContext) {
 
   def listAll: Future[List[OutageData]] = adminCustomsServiceStatusRepository.findAll()
+
+  def listAllArchived: Future[List[OutageData]] = archivedOutagesRepository.findAll()
 
   def clearAllData: Future[Unit] =
     for {
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.collection.drop().toFuture())
       _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.collection.drop().toFuture())
+      _ <- Mdc.preservingMdc(archivedOutagesRepository.collection.drop().toFuture())
       _ <- Mdc.preservingMdc(customsServiceStatusRepository.ensureIndexes())
       _ <- Mdc.preservingMdc(adminCustomsServiceStatusRepository.ensureIndexes())
     } yield ()
