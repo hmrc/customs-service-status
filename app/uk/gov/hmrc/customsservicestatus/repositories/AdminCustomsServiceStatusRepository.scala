@@ -20,12 +20,11 @@ import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters.gte
-import uk.gov.hmrc.customsservicestatus.models.OutageData
+import org.mongodb.scala.model.Filters._
+import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
-import uk.gov.hmrc.play.http.logging.Mdc
-
+import uk.gov.hmrc.mdc.Mdc
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,4 +57,13 @@ class AdminCustomsServiceStatusRepository @Inject() (
       collection.find(filter = gte("endDateTime", BsonDateTime(Instant.now().toEpochMilli))).sort(Sorts.ascending("startDateTime")).toFuture()
     )
     .map(_.toList)
+
+  def getLatest(outageType: OutageType): Future[Option[OutageData]] =
+    Mdc.preservingMdc(
+      collection
+        .find(and(equal("outageType", outageType.toString)))
+        .sort(Sorts.descending("publishedDateTime"))
+        .limit(1)
+        .headOption()
+    )
 }

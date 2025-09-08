@@ -25,12 +25,15 @@ import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
 import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
+import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
 import scala.concurrent.Future
 
 class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   val controller = new AdminCustomsServiceStatusController(mockAdminCustomsStatusService, stubControllerComponents())
+
+  private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
 
   "submitOutage" should {
     "validate a correct request json and call the service" when {
@@ -71,6 +74,19 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
       val result = controller.getAllPlannedWorks(FakeRequest())
       status(result) shouldBe OK
+    }
+  }
+
+  "getLatestOutage" should {
+    "return correct json for an UnplannedOutageData" in {
+      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(Some(fakeUnplannedOutage)))
+      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(Json.toJson[OutageData](fakeUnplannedOutage)))
+      status(result) shouldBe OK
+    }
+    "return 404 when there is no UnplannedOutageData" in {
+      when(mockAdminCustomsStatusService.getLatestOutage(outageType = Unplanned)).thenReturn(Future.successful(None))
+      val result = controller.getLatestOutage(outageType = Unplanned)(FakeRequest().withBody(None))
+      status(result) shouldBe NOT_FOUND
     }
   }
 }

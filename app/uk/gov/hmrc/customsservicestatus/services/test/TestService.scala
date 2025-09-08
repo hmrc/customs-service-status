@@ -17,7 +17,7 @@
 package uk.gov.hmrc.customsservicestatus.services.test
 
 import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, CustomsServiceStatusRepository}
-import uk.gov.hmrc.play.http.logging.Mdc
+import uk.gov.hmrc.mdc.Mdc
 import org.mongodb.scala.SingleObservableFuture
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 
