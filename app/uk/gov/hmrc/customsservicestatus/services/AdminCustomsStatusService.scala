@@ -55,7 +55,7 @@ class AdminCustomsStatusService @Inject() (
   def findAllOutages(): Future[List[OutageData]] =
     outagesRepository.findAll()
 
-  def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest(outageType)
+  def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = outagesRepository.getLatest(outageType)
 
   def findOutage(id: UUID): Future[Option[OutageData]] =
     outagesRepository.find(id)

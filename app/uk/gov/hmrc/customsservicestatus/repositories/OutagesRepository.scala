@@ -21,7 +21,7 @@ import com.mongodb.client.model.Indexes.{ascending, descending}
 import org.mongodb.scala.*
 import org.mongodb.scala.bson.BsonDateTime
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters.{equal, gte}
+import org.mongodb.scala.model.Filters.*
 import uk.gov.hmrc.customsservicestatus.models.*
 import org.mongodb.scala.result.{DeleteResult, InsertOneResult}
 import uk.gov.hmrc.mongo.MongoComponent
@@ -71,6 +71,15 @@ class OutagesRepository @Inject() (
         .toFuture()
     )
     .map(_.toList)
+
+  def getLatest(outageType: OutageType): Future[Option[OutageData]] =
+    Mdc.preservingMdc(
+      collection
+        .find(and(equal("outageType", outageType.toString)))
+        .sort(Sorts.descending("publishedDateTime"))
+        .limit(1)
+        .headOption()
+    )
 
   def delete(id: UUID): Future[DeleteResult] =
     Mdc.preservingMdc(collection.deleteOne(equal("id", id.toBson)).toFuture())

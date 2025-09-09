@@ -95,9 +95,9 @@ class OutagesRepositoryISpec extends BaseISpec {
     }
 
     "return all the customsServiceStatus entries in the database" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedOutage))
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
-      val result = await(adminCustomsServiceStatusRepository.findAll())
+      await(outagesRepository.submitOutage(fakePlannedOutage))
+      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      val result = await(outagesRepository.findAll())
       result.size shouldBe 2
     }
   }
