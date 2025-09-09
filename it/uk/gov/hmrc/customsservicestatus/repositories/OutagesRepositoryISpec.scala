@@ -20,13 +20,13 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
-import uk.gov.hmrc.customsservicestatus.models.OutageType.{Planned, Unplanned}
+import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
-class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
+class OutagesRepositoryISpec extends BaseISpec {
 
   val testController: TestController = app.injector.instanceOf[TestController]
 
@@ -35,54 +35,62 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
     await(testController.clearAllData(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  val adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository = app.injector.instanceOf[AdminCustomsServiceStatusRepository]
+  private val outagesRepository: OutagesRepository = app.injector.instanceOf[OutagesRepository]
 
   private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
   private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
 
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedWorks.head))
+      await(outagesRepository.submitOutage(fakeUnplannedOutage))
       val result = testController.list()(fakeRequest(testRoutes.TestController.list()))
-      contentAsJson(result).as[List[OutageData]].size shouldBe 1
+      contentAsJson(result).as[List[OutageData]] shouldBe List(fakeUnplannedOutage)
     }
 
     "create a planned outage in the database with a valid request" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeOutageData(Planned, Some(fakeDate))))
+      await(outagesRepository.submitOutage(fakePlannedOutage))
       val result = testController.list()(fakeRequest(testRoutes.TestController.list()))
-      contentAsJson(result).as[List[OutageData]].size shouldBe 1
+      contentAsJson(result).as[List[OutageData]] shouldBe List(fakePlannedOutage)
     }
   }
 
   "findAllPlanned" should {
     "return empty list if no record in the db" in {
-      val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
+      val result = await(outagesRepository.findAllPlanned())
       result.size shouldBe 0
     }
 
     "return an empty list if there are only unplanned outage entries in the database" in {
-      await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
-      val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
+      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      val result = await(outagesRepository.findAllPlanned())
       result.size shouldBe 0
     }
 
     "return all the outage entries whose end date is in the future" in {
-      val fixedFutureTime =
-        await(adminCustomsServiceStatusRepository.submitOutage(fakePlannedOutage))
+      await(outagesRepository.submitOutage(fakePlannedOutage))
       await(
-        adminCustomsServiceStatusRepository.submitOutage(
+        outagesRepository.submitOutage(
           fakePlannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))).copy(id = UUID.randomUUID())
         )
       )
 
-      val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
+      val result = await(outagesRepository.findAllPlanned())
       result.head shouldBe fakePlannedOutage
       result.size shouldBe 1
     }
 
+    "return no outage entries if end dates are in the past" in {
+      await(
+        outagesRepository.submitOutage(fakePlannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))))
+      )
+
+      val result = await(outagesRepository.findAllPlanned())
+      result.size shouldBe 0
+    }
+
     "return all the outage entries sorted by their start date" in {
-      fakePlannedWorks.map(plannedWork => await(adminCustomsServiceStatusRepository.submitOutage(plannedWork)))
-      val result = await(adminCustomsServiceStatusRepository.findAllPlanned())
+      fakePlannedWorks.map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
+      val result = await(outagesRepository.findAllPlanned())
       result.map(_.startDateTime) shouldBe sorted
     }
 
@@ -91,6 +99,37 @@ class AdminCustomsServiceStatusRepositoryISpec extends BaseISpec {
       await(adminCustomsServiceStatusRepository.submitOutage(fakeUnplannedOutage))
       val result = await(adminCustomsServiceStatusRepository.findAll())
       result.size shouldBe 2
+    }
+  }
+
+  "findAll" should {
+    "return all the outage entries" in {
+      List(fakePlannedOutage, fakeUnplannedOutage).map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
+      val result = await(outagesRepository.findAll())
+      result should contain allElementsOf List(fakePlannedOutage, fakeUnplannedOutage)
+    }
+  }
+
+  "find" should {
+    "return a matching planned outage" in {
+      await(outagesRepository.submitOutage(fakePlannedOutage))
+      val result = await(outagesRepository.find(fakePlannedOutage.id))
+      result shouldBe Some(fakePlannedOutage)
+    }
+
+    "return a matching unplanned outage" in {
+      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      val result = await(outagesRepository.find(fakeUnplannedOutage.id))
+      result shouldBe Some(fakeUnplannedOutage)
+    }
+  }
+
+  "delete" should {
+    "successfully delete an outage if it exists" in {
+      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      await(outagesRepository.delete(fakeUnplannedOutage.id))
+      val result = callRoute(fakeRequest(testRoutes.TestController.list()))
+      contentAsJson(result).as[List[OutageData]] shouldBe List.empty
     }
   }
 }
