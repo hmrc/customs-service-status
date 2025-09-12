@@ -35,14 +35,17 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
   def updateWithOutageData(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
       validateJson[OutageData] { outageData =>
-        adminCustomsServiceStatusService
-          .submitOutage(outageData)
-          .map {
-            case Left(error) =>
+        EitherT(
+          adminCustomsServiceStatusService
+            .submitOutage(outageData)
+        )
+          .fold(
+            error => {
               logger.error(s"Outage with internal reference ${outageData.internalReference.text} could not be written to the database")
               InternalServerError
-            case Right(_) => Ok
-          }
+            },
+            _ => Ok
+          )
       }
     }
 
