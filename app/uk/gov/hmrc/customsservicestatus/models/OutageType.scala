@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.models
 
+import play.api.i18n.Messages
 import play.api.libs.json.*
 import play.api.mvc.{PathBindable, QueryStringBindable}
 

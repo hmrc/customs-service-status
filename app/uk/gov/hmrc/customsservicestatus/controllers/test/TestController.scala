@@ -42,6 +42,10 @@ class TestController @Inject() (
     testService.listAll.map(result => Ok(Json.toJson(result)))
   }
 
+  def listArchived(): Action[AnyContent] = Action.async { _ =>
+    testService.listAllArchived.map(result => Ok(Json.toJson(result)))
+  }
+
   private def withRecover(f: => Future[Result]): Future[Result] = f.recover { case e: Exception =>
     InternalServerError("Failure with message: " + e.toString)
   }

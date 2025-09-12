@@ -21,7 +21,7 @@ import org.mongodb.scala.SingleObservableFuture
 import org.scalatest.{BeforeAndAfterAll, TestSuite}
 import org.scalatestplus.play.BaseOneAppPerSuite
 import play.api.inject.ApplicationLifecycle
-import uk.gov.hmrc.customsservicestatus.repositories.{AdminCustomsServiceStatusRepository, CustomsServiceStatusRepository}
+import uk.gov.hmrc.customsservicestatus.repositories.{CustomsServiceStatusRepository, OutagesRepository}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -34,7 +34,7 @@ trait CleanMongo extends BeforeAndAfterAll { this: TestSuite & BaseOneAppPerSuit
   override protected def beforeAll(): Unit = {
     lazy val repositories: Seq[PlayMongoRepository[?]] = Seq(
       app.injector.instanceOf[CustomsServiceStatusRepository],
-      app.injector.instanceOf[AdminCustomsServiceStatusRepository]
+      app.injector.instanceOf[OutagesRepository]
     )
 
     super.beforeAll()

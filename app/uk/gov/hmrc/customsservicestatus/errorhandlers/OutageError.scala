@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,7 @@ sealed trait OutageError
 
 object OutageError {
   case object OutageInsertError extends OutageError
-  case object OutageDeleteError extends OutageError
+  case object OutageArchiveError extends OutageError
+  case object OutageArchiveInsertError extends OutageError
+
 }

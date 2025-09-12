@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.controllers
 
+import cats.data.EitherT
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.customsservicestatus.models.OutageData
@@ -23,6 +24,7 @@ import uk.gov.hmrc.customsservicestatus.models.OutageData.format
 import uk.gov.hmrc.customsservicestatus.models.OutageType
 import uk.gov.hmrc.customsservicestatus.services.AdminCustomsStatusService
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
@@ -33,14 +35,17 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
   def updateWithOutageData(): Action[JsValue] =
     Action.async(parse.json) { implicit request =>
       validateJson[OutageData] { outageData =>
-        adminCustomsServiceStatusService
-          .submitOutage(outageData)
-          .map {
-            case Left(error) =>
-              logger.error(s"Outage with internal reference ${outageData.internalReference} could not be written to the database")
+        EitherT(
+          adminCustomsServiceStatusService
+            .submitOutage(outageData)
+        )
+          .fold(
+            error => {
+              logger.error(s"Outage with internal reference ${outageData.internalReference.text} could not be written to the database")
               InternalServerError
-            case Right(_) => Ok
-          }
+            },
+            _ => Ok
+          )
       }
     }
 
@@ -53,5 +58,17 @@ class AdminCustomsServiceStatusController @Inject() (adminCustomsServiceStatusSe
       case Some(result) => Ok(Json.toJson(result))
       case None         => NotFound
     }
+  }
+
+  def findAllOutages(): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.findAllOutages().map(result => Ok(Json.toJson(result)))
+  }
+
+  def findOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    adminCustomsServiceStatusService.findOutage(id).map(outage => Ok(Json.toJson(outage)))
+  }
+
+  def archiveOutage(id: UUID): Action[AnyContent] = Action.async { implicit request =>
+    EitherT(adminCustomsServiceStatusService.archiveOutage(id)).fold(_ => InternalServerError, outage => Ok(Json.toJson(outage)))
   }
 }
