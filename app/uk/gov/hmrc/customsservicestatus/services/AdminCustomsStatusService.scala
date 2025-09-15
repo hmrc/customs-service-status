@@ -16,38 +16,59 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
+import cats.data.EitherT
 import com.google.inject.Singleton
 import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
+import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError.*
 import uk.gov.hmrc.customsservicestatus.models.*
-import uk.gov.hmrc.customsservicestatus.repositories.AdminCustomsServiceStatusRepository
+import uk.gov.hmrc.customsservicestatus.repositories.{ArchivedOutagesRepository, OutagesRepository}
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AdminCustomsStatusService @Inject() (
-  val config:                          Configuration,
-  adminCustomsServiceStatusRepository: AdminCustomsServiceStatusRepository
+  val config:                Configuration,
+  outagesRepository:         OutagesRepository,
+  archivedOutagesRepository: ArchivedOutagesRepository
 )(implicit
   val executionContext: ExecutionContext
 ) {
 
   def submitOutage(
-    outageData: OutageData
+    outage: OutageData
   ): Future[Either[OutageError, Unit]] =
-    adminCustomsServiceStatusRepository
+    outagesRepository
       .submitOutage(
-        outageData
+        outage
       )
       .map {
         case insert if insert.wasAcknowledged() => Right(())
-        case _                                  => Left(OutageError.OutageInsertError)
+        case _                                  => Left(OutageInsertError)
       }
 
   def getAllPlannedWorks: Future[Seq[OutageData]] =
-    adminCustomsServiceStatusRepository.findAllPlanned()
+    outagesRepository.findAllPlanned()
 
-  def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = adminCustomsServiceStatusRepository.getLatest(outageType)
+  def findAllOutages(): Future[List[OutageData]] =
+    outagesRepository.findAll()
 
+  def getLatestOutage(outageType: OutageType): Future[Option[OutageData]] = outagesRepository.getLatest(outageType)
+
+  def findOutage(id: UUID): Future[Option[OutageData]] =
+    outagesRepository.find(id)
+
+  def archiveOutage(id: UUID): Future[Either[OutageError, OutageData]] =
+    outagesRepository.find(id).flatMap {
+      case Some(outage) =>
+        for {
+          insertResult <- archivedOutagesRepository.insert(outage)
+          result <- if (insertResult.wasAcknowledged()) {
+                      outagesRepository.delete(id).map(_ => Right(outage))
+                    } else Future.successful(Left(OutageArchiveInsertError))
+        } yield result
+      case None => Future.successful(Left(OutageArchiveError))
+    }
 }

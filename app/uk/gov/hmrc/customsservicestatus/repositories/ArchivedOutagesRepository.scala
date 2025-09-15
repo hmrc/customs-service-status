@@ -18,23 +18,27 @@ package uk.gov.hmrc.customsservicestatus.repositories
 
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.*
-import org.mongodb.scala.bson.BsonDateTime
+import org.mongodb.scala.bson.{BsonBinary, BsonDateTime}
 import org.mongodb.scala.model.*
-import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Filters.*
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs.JsonOps
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mdc.Mdc
+
 import java.time.Instant
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AdminCustomsServiceStatusRepository @Inject() (
+class ArchivedOutagesRepository @Inject() (
   mongo: MongoComponent
 )(implicit executionContext: ExecutionContext)
     extends PlayMongoRepository[OutageData](
-      collectionName = "admin-customs-service-status",
+      collectionName = "archived-outages",
       mongoComponent = mongo,
       domainFormat = OutageData.mongoFormat,
       indexes = Seq(
@@ -43,10 +47,10 @@ class AdminCustomsServiceStatusRepository @Inject() (
       )
     ) {
 
-  def submitOutage(adminCustomsServiceStatus: OutageData): Future[result.InsertOneResult] =
+  def insert(outage: OutageData): Future[InsertOneResult] =
     Mdc.preservingMdc(
       collection
-        .insertOne(adminCustomsServiceStatus)
+        .insertOne(outage)
         .toFuture()
     )
 

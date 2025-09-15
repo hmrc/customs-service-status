@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
-import com.mongodb.client.result.InsertOneResult
+import com.mongodb.client.result.{DeleteResult, InsertOneResult}
 import org.bson.BsonValue
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -25,28 +25,36 @@ import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 
+import java.util.UUID
 import scala.concurrent.Future
 
 class AdminCustomsStatusServiceSpec extends BaseSpec {
   trait Setup {
-    val service = new AdminCustomsStatusService(mockConfig, mockAdminCustomsServiceStatusRepository)
+    val service = new AdminCustomsStatusService(mockConfig, mockOutagesRepository, mockArchivedOutagesRepository)
 
     case class acknowledgedInsertOneResult(isAcknowledged: Boolean = true) extends InsertOneResult {
-      override def wasAcknowledged(): Boolean   = isAcknowledged
-      override def getInsertedId:     BsonValue = null
+      override def wasAcknowledged(): Boolean = isAcknowledged
+
+      override def getInsertedId: BsonValue = null
+    }
+
+    case class acknowledgedDeleteResult(isAcknowledged: Boolean = true) extends DeleteResult {
+      override def wasAcknowledged(): Boolean = isAcknowledged
+
+      override def getDeletedCount: Long = 0
     }
   }
 
   "submitOutage" should {
     "return a Right containing Unit" when {
       "valid unplanned outage data parsed" in new Setup {
-        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+        when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
         val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned, None))
         result.futureValue shouldBe Right(())
       }
 
       "valid planned outage data parsed" in new Setup {
-        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+        when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
         val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Planned, Some(fakeDate)))
         result.futureValue shouldBe Right(())
       }
@@ -54,13 +62,13 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
     "return a Left with an error if the insert was not acknowledged" when {
       "valid unplanned outage data parsed" in new Setup {
-        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+        when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
         val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Unplanned, None))
         result.futureValue shouldBe Left(OutageError.OutageInsertError)
       }
 
       "valid planned outage data parsed" in new Setup {
-        when(mockAdminCustomsServiceStatusRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+        when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
         val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(Planned, Some(fakeDate)))
         result.futureValue shouldBe Left(OutageError.OutageInsertError)
       }
@@ -70,28 +78,98 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
   "getLatestOutage" should {
     "return the latest unplanned outage" in new Setup {
       val validOutageData = fakeOutageData(Unplanned, None)
-      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(validOutageData))
+      when(mockOutagesRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(validOutageData))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
       result.futureValue shouldBe validOutageData
     }
 
     "return the latest planned outage" in new Setup {
       val validOutageData = fakeOutageData(Planned, None)
-      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(validOutageData))
+      when(mockOutagesRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(validOutageData))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Planned)
       result.futureValue shouldBe validOutageData
     }
 
     "return 404 where there is no unplanned outage" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(None))
+      when(mockOutagesRepository.getLatest(outageType = Unplanned)).thenReturn(Future.successful(None))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Unplanned)
       result.futureValue shouldBe None
     }
 
     "return 404 where there is no planned outage" in new Setup {
-      when(mockAdminCustomsServiceStatusRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(None))
+      when(mockOutagesRepository.getLatest(outageType = Planned)).thenReturn(Future.successful(None))
       val result: Future[Option[OutageData]] = service.getLatestOutage(outageType = Planned)
       result.futureValue shouldBe None
+    }
+  }
+
+  "getAllPlannedWorks" should {
+    "return a list of planned outages" in new Setup {
+      when(mockOutagesRepository.findAllPlanned()).thenReturn(Future.successful(fakePlannedWorks))
+      val result: Future[Seq[OutageData]] = service.getAllPlannedWorks
+      result.futureValue shouldBe fakePlannedWorks
+    }
+  }
+
+  "findAllOutages" should {
+    "return a list of outages" when {
+      "the database has a mix of valid outage data" in new Setup {
+        when(mockOutagesRepository.findAll()).thenReturn(Future.successful(fakePlannedWorks ++ fakeUnplannedWorks))
+        val result: Future[List[OutageData]] = service.findAllOutages()
+        result.futureValue shouldBe fakePlannedWorks ++ fakeUnplannedWorks
+      }
+
+      "the database is empty" in new Setup {
+        when(mockOutagesRepository.findAll()).thenReturn(Future.successful(List.empty))
+        val result: Future[List[OutageData]] = service.findAllOutages()
+        result.futureValue shouldBe List.empty
+      }
+    }
+  }
+
+  "findOutage" should {
+    "return the correct outage" when {
+      "given a matching id" in new Setup {
+        val outage: OutageData = fakeOutageData(Unplanned, None).copy(id = UUID.randomUUID())
+        when(mockOutagesRepository.find(any())).thenReturn(Future.successful(Some(outage)))
+        val result: Future[Option[OutageData]] = service.findOutage(outage.id)
+        result.futureValue shouldBe Some(outage)
+      }
+    }
+    "return None" when {
+      "given a non-matching id" in new Setup {
+        when(mockOutagesRepository.find(any())).thenReturn(Future.successful(None))
+        val result: Future[Option[OutageData]] = service.findOutage(UUID.randomUUID())
+        result.futureValue shouldBe None
+      }
+    }
+  }
+
+  "archiveOutage" should {
+    "return the relevant outage after archiving it when given a matching id" in new Setup {
+      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      when(mockOutagesRepository.find(any())).thenReturn(Future.successful(Some(outage)))
+      when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+      when(mockOutagesRepository.delete(any())).thenReturn(Future.successful(acknowledgedDeleteResult()))
+      val result: Future[Either[OutageError, OutageData]] = service.archiveOutage(outage.id)
+      result.futureValue shouldBe Right(outage)
+    }
+
+    "return an error if the outage does not exist in the database" in new Setup {
+      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      when(mockOutagesRepository.find(any())).thenReturn(Future.successful(None))
+      when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
+      when(mockOutagesRepository.delete(any())).thenReturn(Future.successful(acknowledgedDeleteResult()))
+      val result = service.archiveOutage(outage.id)
+      result.futureValue shouldBe Left(OutageError.OutageArchiveError)
+    }
+
+    "return an error if the outage was not inserted into the archive repository" in new Setup {
+      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      when(mockOutagesRepository.find(any())).thenReturn(Future.successful(Some(outage)))
+      when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
+      val result = service.archiveOutage(outage.id)
+      result.futureValue shouldBe Left(OutageError.OutageArchiveInsertError)
     }
   }
 }
