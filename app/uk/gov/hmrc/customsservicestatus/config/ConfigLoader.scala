@@ -19,16 +19,16 @@ package uk.gov.hmrc.customsservicestatus.config
 import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus
 import scala.jdk.CollectionConverters.ListHasAsScala
 
-
 object ConfigLoader {
 
-  implicit lazy val configLoader: play.api.ConfigLoader[List[CustomsServiceStatus]] = play.api.ConfigLoader(_.getConfigList).map(
-    _.asScala.toList.map { config =>
-      val id = config.getString("id")
-      val name = config.getString("name")
-      val description = config.getString("description")
-      CustomsServiceStatus(id, name, description, None, None, None)
-    }
-  )
+  implicit lazy val configLoader: play.api.ConfigLoader[List[CustomsServiceStatus]] = play.api
+    .ConfigLoader(_.getConfigList)
+    .map(
+      _.asScala.toList.map { config =>
+        val id          = config.getString("id")
+        val name        = config.getString("name")
+        val description = config.getString("description")
+        CustomsServiceStatus(id, name, description, None, None, None)
+      }
+    )
 }
-
