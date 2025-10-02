@@ -11,7 +11,14 @@ lazy val microservice = Project("customs-service-status", file("."))
     ScoverageKeys.coverageExcludedFiles :=
       "<empty>;com.kenshoo.play.metrics.*;.*definition.*;prod.*;testOnlyDoNotUseInAppConf.*;" +
         "app.*;.*BuildInfo.*;.*Routes.*;.*repositories.*;.*controllers.test.*;.*services.test.*;.*metrics.*",
-    ScoverageKeys.coverageMinimumStmtTotal := 80,
+    ScoverageKeys.coverageExcludedPackages :=
+      ( "uk.gov.hmrc.customsservicestatus.config.*;" +
+        "uk.gov.hmrc.customsservicestatus.controllers.test.*;" +
+        "uk.gov.hmrc.customsservicestatus.services.test.*;" +
+        "uk.gov.hmrc.customsservicestatus.connectors.test.*;"  +
+        "uk.gov.hmrc.customsservicestatus.models.*;"
+      ),
+    ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     Test / unmanagedSourceDirectories := (Test / baseDirectory)(base => Seq(base / "test", base / "test-common")).value,

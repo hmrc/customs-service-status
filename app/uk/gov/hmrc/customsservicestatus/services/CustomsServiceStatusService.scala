@@ -24,7 +24,7 @@ import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError
 import uk.gov.hmrc.customsservicestatus.errorhandlers.CustomsServiceStatusError.ServiceNotConfiguredError
 import uk.gov.hmrc.customsservicestatus.models.State.UNKNOWN
 import uk.gov.hmrc.customsservicestatus.models._
-import uk.gov.hmrc.customsservicestatus.models.CustomsServiceStatus._
+import uk.gov.hmrc.customsservicestatus.config.ConfigLoader._
 import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 
 import java.time.Instant
