@@ -22,7 +22,6 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
-import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 
 class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 

@@ -26,11 +26,7 @@ import uk.gov.hmrc.customsservicestatus.helpers.BaseSpec
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError
-import uk.gov.hmrc.customsservicestatus.models.DetailType.*
-import uk.gov.hmrc.http.UpstreamErrorResponse
 
-import java.time.Instant
-import java.util.UUID
 import scala.concurrent.Future
 
 class AdminCustomsServiceStatusControllerSpec extends BaseSpec {

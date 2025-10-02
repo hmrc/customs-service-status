@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.customsservicestatus.services
 
-import cats.data.EitherT
 import com.google.inject.Singleton
 import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.errorhandlers.OutageError

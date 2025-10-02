@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.customsservicestatus.repositories
 
-import cats.data.OptionT
 import com.mongodb.client.model.Indexes.{ascending, descending}
 import org.mongodb.scala.*
 import org.mongodb.scala.bson.BsonDateTime
