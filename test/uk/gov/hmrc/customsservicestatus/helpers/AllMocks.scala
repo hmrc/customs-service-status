@@ -21,7 +21,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import uk.gov.hmrc.customsservicestatus.repositories.{ArchivedOutagesRepository, CustomsServiceStatusRepository, OutagesRepository}
-import uk.gov.hmrc.customsservicestatus.repositories.CustomsServiceStatusRepository
 import uk.gov.hmrc.customsservicestatus.services.{AdminCustomsStatusService, CustomsServiceStatusService}
 
 trait AllMocks extends MockitoSugar { me: BeforeAndAfterEach =>
