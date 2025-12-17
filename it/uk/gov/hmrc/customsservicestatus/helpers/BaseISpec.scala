@@ -29,7 +29,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.*
 import play.api.test.*
 import play.api.{Application, Mode}
-import uk.gov.hmrc.customsservicestatus.FakeObjects
 
 import scala.concurrent.ExecutionContext.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,8 +57,7 @@ abstract class BaseISpec
     with MimeTypes
     with HttpProtocol
     with HttpVerbs
-    with ResultExtractors
-    with FakeObjects {
+    with ResultExtractors {
 
   implicit lazy val system:       ActorSystem      = ActorSystem()
   implicit lazy val materializer: Materializer     = Materializer(system)

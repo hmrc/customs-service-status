@@ -22,6 +22,8 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.TestController
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
+import uk.gov.hmrc.customsservicestatus.TestData.*
+import uk.gov.hmrc.customsservicestatus.factories.OutageDataFactory.*
 
 class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
@@ -32,8 +34,8 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  private val fakeUnplannedOutage = fakeOutageData(Unplanned, None)
-  private val fakePlannedOutage   = fakeOutageData(Planned, Some(fakeDate))
+  private val fakeUnplannedOutage = fakeOutageData(outageType = Unplanned)
+  private val fakePlannedOutage   = fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate))
 
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged (unplanned)" in {

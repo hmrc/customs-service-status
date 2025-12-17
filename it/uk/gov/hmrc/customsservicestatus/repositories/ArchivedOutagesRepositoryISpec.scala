@@ -20,6 +20,8 @@ import uk.gov.hmrc.customsservicestatus.controllers.test.{TestController, routes
 import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.OutageData
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
+import uk.gov.hmrc.customsservicestatus.TestData.fakeDate
+import uk.gov.hmrc.customsservicestatus.factories.OutageDataFactory.*
 
 class ArchivedOutagesRepositoryISpec extends BaseISpec {
 
@@ -34,14 +36,14 @@ class ArchivedOutagesRepositoryISpec extends BaseISpec {
 
   "submitOutage" should {
     "submit a planned outage correctly" in {
-      val plannedOutage = fakeOutageData(Planned, None, fakeDate)
+      val plannedOutage = fakeOutageData(outageType = Planned, startDateTime = fakeDate)
       await(archivedOutagesRepository.insert(plannedOutage))
       val result = testController.listArchived()(fakeRequest(testRoutes.TestController.listArchived()))
       contentAsJson(result).as[List[OutageData]] shouldBe List(plannedOutage)
     }
 
     "submit an unplanned outage correctly" in {
-      val unplannedOutage = fakeOutageData(Unplanned, None)
+      val unplannedOutage = fakeOutageData(outageType = Unplanned)
       await(archivedOutagesRepository.insert(unplannedOutage))
       val result = testController.listArchived()(fakeRequest(testRoutes.TestController.listArchived()))
       contentAsJson(result).as[List[OutageData]] shouldBe List(unplannedOutage)

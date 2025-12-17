@@ -21,6 +21,8 @@ import uk.gov.hmrc.customsservicestatus.helpers.BaseISpec
 import uk.gov.hmrc.customsservicestatus.models.DetailType.*
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
 import uk.gov.hmrc.customsservicestatus.models.OutageType.*
+import uk.gov.hmrc.customsservicestatus.TestData.*
+import uk.gov.hmrc.customsservicestatus.factories.OutageDataFactory.*
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -37,8 +39,9 @@ class OutagesRepositoryISpec extends BaseISpec {
 
   private val outagesRepository: OutagesRepository = app.injector.instanceOf[OutagesRepository]
 
-  private val fakeUnplannedOutage: OutageData = fakeOutageData(Unplanned, None)
-  private val fakePlannedOutage:   OutageData = fakeOutageData(Planned, Some(Instant.now().truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
+  private val fakeUnplannedOutage: OutageData = fakeOutageData(outageType = Unplanned)
+  private val fakePlannedOutage: OutageData =
+    fakeOutageData(outageType = Planned, endDateTime = Some(now.truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
 
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
