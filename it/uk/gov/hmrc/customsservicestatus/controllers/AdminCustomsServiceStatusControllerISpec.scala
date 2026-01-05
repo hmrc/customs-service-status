@@ -34,15 +34,15 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
     await(callRoute(fakeRequest(testRoutes.TestController.clearAllData)))
   }
 
-  private val fakeUnplannedOutage = fakeOutageData(outageType = Unplanned)
-  private val fakePlannedOutage   = fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate))
+  private val unplannedOutage = fakeOutageData(outageType = Unplanned)
+  private val plannedOutage   = fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate))
 
   "POST /services/messages" should {
     "return None if the information insert to the database was acknowledged (unplanned)" in {
       val result =
         await(
           callRoute(
-            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(fakeUnplannedOutage))
+            fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(unplannedOutage))
           )
         )
 
@@ -50,7 +50,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       result.header.status                                shouldBe OK
       status(findResult)                                  shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]].head shouldBe fakeUnplannedOutage
+      contentAsJson(findResult).as[List[OutageData]].head shouldBe unplannedOutage
     }
 
     "return None if the information insert to the database was acknowledged (planned)" in {
@@ -58,7 +58,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
         await(
           callRoute(
             fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData())
-              .withBody(Json.toJson(fakePlannedOutage))
+              .withBody(Json.toJson(plannedOutage))
           )
         )
 
@@ -66,7 +66,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
       result.header.status                                shouldBe OK
       status(findResult)                                  shouldBe OK
-      contentAsJson(findResult).as[List[OutageData]].head shouldBe fakePlannedOutage
+      contentAsJson(findResult).as[List[OutageData]].head shouldBe plannedOutage
     }
 
     "return a 400 if the information insert was unsuccessful" in {
@@ -95,7 +95,7 @@ class AdminCustomsServiceStatusControllerISpec extends BaseISpec {
 
     "return Ok with a list of 2 valid planned outages" when {
       "given three outages and an end date in the past" in {
-        fakePlannedWorks.map(o =>
+        plannedWorks.map(o =>
           await(callRoute(fakeRequest(routes.AdminCustomsServiceStatusController.updateWithOutageData()).withBody(Json.toJson(o))))
         )
 

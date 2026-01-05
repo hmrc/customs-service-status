@@ -27,18 +27,22 @@ import java.util.UUID
 
 object TestData {
 
-  val now: Instant = Instant.now()
+  val pastTestDate: Instant = Instant.parse("2020-01-01T00:00:00.000Z")
 
-  val fakeDate: Instant = Instant.parse("2020-01-01T00:00:00.000Z")
+  val futureTestDate: Instant = Instant.parse("2030-01-01T00:00:00.000Z")
 
-  val fakePlannedWorks: List[OutageData] = List(
-    fakeOutageData(outageType = Planned, startDateTime = now.plus(6, ChronoUnit.DAYS), endDateTime = Some(now.plus(10, ChronoUnit.DAYS))),
-    fakeOutageData(outageType = Planned, startDateTime = now.plus(2, ChronoUnit.DAYS), endDateTime = Some(now.plus(5, ChronoUnit.DAYS))),
-    fakeOutageData(outageType = Planned, endDateTime = Some(now.plus(1, ChronoUnit.DAYS))),
-    fakeOutageData(outageType = Planned, startDateTime = now.minus(3, ChronoUnit.DAYS), endDateTime = Some(now.minus(2, ChronoUnit.DAYS)))
+  val plannedWorks: List[OutageData] = List(
+    fakeOutageData(outageType = Planned, startDateTime = futureTestDate, endDateTime = Some(futureTestDate.plus(10, ChronoUnit.DAYS))),
+    fakeOutageData(outageType = Planned, startDateTime = futureTestDate, endDateTime = Some(futureTestDate.plus(5, ChronoUnit.DAYS))),
+    fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate.plus(1, ChronoUnit.DAYS))),
+    fakeOutageData(
+      outageType = Planned,
+      startDateTime = pastTestDate.minus(3, ChronoUnit.DAYS),
+      endDateTime = Some(pastTestDate.minus(2, ChronoUnit.DAYS))
+    )
   )
 
-  val fakeUnplannedWorks: List[OutageData] = List(
+  val unplannedWorks: List[OutageData] = List(
     fakeOutageData(outageType = Unplanned),
     fakeOutageData(outageType = Unplanned)
   )

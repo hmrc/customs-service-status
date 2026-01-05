@@ -57,7 +57,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
       "valid planned outage data parsed" in new Setup {
         when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
-        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate)))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate)))
         result.futureValue shouldBe Right(())
       }
     }
@@ -71,7 +71,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
       "valid planned outage data parsed" in new Setup {
         when(mockOutagesRepository.submitOutage(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
-        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate)))
+        val result: Future[Either[OutageError, Unit]] = service.submitOutage(fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate)))
         result.futureValue shouldBe Left(OutageError.OutageInsertError)
       }
     }
@@ -107,18 +107,18 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
   "getAllPlannedWorks" should {
     "return a list of planned outages" in new Setup {
-      when(mockOutagesRepository.findAllPlanned()).thenReturn(Future.successful(fakePlannedWorks))
+      when(mockOutagesRepository.findAllPlanned()).thenReturn(Future.successful(plannedWorks))
       val result: Future[Seq[OutageData]] = service.getAllPlannedWorks
-      result.futureValue shouldBe fakePlannedWorks
+      result.futureValue shouldBe plannedWorks
     }
   }
 
   "findAllOutages" should {
     "return a list of outages" when {
       "the database has a mix of valid outage data" in new Setup {
-        when(mockOutagesRepository.findAll()).thenReturn(Future.successful(fakePlannedWorks ++ fakeUnplannedWorks))
+        when(mockOutagesRepository.findAll()).thenReturn(Future.successful(plannedWorks ++ unplannedWorks))
         val result: Future[List[OutageData]] = service.findAllOutages()
-        result.futureValue shouldBe fakePlannedWorks ++ fakeUnplannedWorks
+        result.futureValue shouldBe plannedWorks ++ unplannedWorks
       }
 
       "the database is empty" in new Setup {
@@ -149,7 +149,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
 
   "archiveOutage" should {
     "return the relevant outage after archiving it when given a matching id" in new Setup {
-      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      val outage: OutageData = plannedWorks.head.copy(id = UUID.randomUUID())
       when(mockOutagesRepository.find(any())).thenReturn(Future.successful(Some(outage)))
       when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
       when(mockOutagesRepository.delete(any())).thenReturn(Future.successful(acknowledgedDeleteResult()))
@@ -158,7 +158,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
     }
 
     "return an error if the outage does not exist in the database" in new Setup {
-      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      val outage: OutageData = plannedWorks.head.copy(id = UUID.randomUUID())
       when(mockOutagesRepository.find(any())).thenReturn(Future.successful(None))
       when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult()))
       when(mockOutagesRepository.delete(any())).thenReturn(Future.successful(acknowledgedDeleteResult()))
@@ -167,7 +167,7 @@ class AdminCustomsStatusServiceSpec extends BaseSpec {
     }
 
     "return an error if the outage was not inserted into the archive repository" in new Setup {
-      val outage: OutageData = fakePlannedWorks.head.copy(id = UUID.randomUUID())
+      val outage: OutageData = plannedWorks.head.copy(id = UUID.randomUUID())
       when(mockOutagesRepository.find(any())).thenReturn(Future.successful(Some(outage)))
       when(mockArchivedOutagesRepository.insert(any())).thenReturn(Future.successful(acknowledgedInsertOneResult(false)))
       val result = service.archiveOutage(outage.id)

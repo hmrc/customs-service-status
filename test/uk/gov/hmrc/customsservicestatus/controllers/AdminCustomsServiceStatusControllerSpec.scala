@@ -48,7 +48,7 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
       "a valid planned outage instance parsed" in {
         when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Right(())))
         val result = controller.updateWithOutageData()(
-          FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate))))
+          FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate))))
         )
         status(result) shouldBe OK
       }
@@ -64,7 +64,7 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
       "a valid planned outage instance parsed" in {
         when(mockAdminCustomsStatusService.submitOutage(any())).thenReturn(Future.successful(Left(OutageError.OutageInsertError)))
         val result = controller.updateWithOutageData()(
-          FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(outageType = Planned, endDateTime = Some(fakeDate))))
+          FakeRequest().withBody(Json.toJson[OutageData](fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate))))
         )
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
@@ -73,18 +73,18 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   "getAllPlannedWorks" should {
     "return OK and call the PlannedWorkService" in {
-      when(mockAdminCustomsStatusService.getAllPlannedWorks).thenReturn(Future[List[OutageData]](fakePlannedWorks))
+      when(mockAdminCustomsStatusService.getAllPlannedWorks).thenReturn(Future[List[OutageData]](plannedWorks))
       val result = controller.getAllPlannedWorks(FakeRequest())
       status(result)                             shouldBe OK
-      contentAsJson(result).as[List[OutageData]] shouldBe fakePlannedWorks
+      contentAsJson(result).as[List[OutageData]] shouldBe plannedWorks
     }
   }
 
   "findAllOutages" should {
     "return OK and a list of outages" in {
-      when(mockAdminCustomsStatusService.findAllOutages()).thenReturn(Future[List[OutageData]](fakePlannedWorks ++ fakeUnplannedWorks))
+      when(mockAdminCustomsStatusService.findAllOutages()).thenReturn(Future[List[OutageData]](plannedWorks ++ unplannedWorks))
       val result = controller.findAllOutages()(FakeRequest())
-      contentAsJson(result).as[List[OutageData]] shouldBe fakePlannedWorks ++ fakeUnplannedWorks
+      contentAsJson(result).as[List[OutageData]] shouldBe plannedWorks ++ unplannedWorks
       status(result)                             shouldBe OK
     }
   }
@@ -104,14 +104,14 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   "findOutage" should {
     "return OK and the matching outage if found" in {
-      when(mockAdminCustomsStatusService.findOutage(fakePlannedWorks.head.id)).thenReturn(Future[Option[OutageData]](Some(fakePlannedWorks.head)))
-      val result = controller.findOutage(fakePlannedWorks.head.id)(fakeRequest)
+      when(mockAdminCustomsStatusService.findOutage(plannedWorks.head.id)).thenReturn(Future[Option[OutageData]](Some(plannedWorks.head)))
+      val result = controller.findOutage(plannedWorks.head.id)(fakeRequest)
       status(result)                          shouldBe OK
-      contentAsJson(result).asOpt[OutageData] shouldBe Some(fakePlannedWorks.head)
+      contentAsJson(result).asOpt[OutageData] shouldBe Some(plannedWorks.head)
     }
     "return OK and the matching outage if not found" in {
-      when(mockAdminCustomsStatusService.findOutage(fakePlannedWorks.head.id)).thenReturn(Future[Option[OutageData]](None))
-      val result = controller.findOutage(fakePlannedWorks.head.id)(fakeRequest)
+      when(mockAdminCustomsStatusService.findOutage(plannedWorks.head.id)).thenReturn(Future[Option[OutageData]](None))
+      val result = controller.findOutage(plannedWorks.head.id)(fakeRequest)
       status(result)                          shouldBe OK
       contentAsJson(result).asOpt[OutageData] shouldBe None
     }
@@ -119,15 +119,15 @@ class AdminCustomsServiceStatusControllerSpec extends BaseSpec {
 
   "archiveOutage" should {
     "return OK and the outage related to the id that was archived" in {
-      when(mockAdminCustomsStatusService.archiveOutage(fakeUnplannedWorks.head.id))
-        .thenReturn(Future(Right(fakeUnplannedWorks.head)))
-      val result = controller.archiveOutage(fakeUnplannedWorks.head.id)(fakeRequest)
+      when(mockAdminCustomsStatusService.archiveOutage(unplannedWorks.head.id))
+        .thenReturn(Future(Right(unplannedWorks.head)))
+      val result = controller.archiveOutage(unplannedWorks.head.id)(fakeRequest)
       status(result)                       shouldBe OK
-      contentAsJson(result).as[OutageData] shouldBe fakeUnplannedWorks.head
+      contentAsJson(result).as[OutageData] shouldBe unplannedWorks.head
     }
     "return a 500 if the outage was not found or could not be added to the archived collection" in {
-      when(mockAdminCustomsStatusService.archiveOutage(fakeUnplannedWorks.head.id)).thenReturn(Future(Left(OutageArchiveError)))
-      val result = controller.archiveOutage(fakeUnplannedWorks.head.id)(fakeRequest)
+      when(mockAdminCustomsStatusService.archiveOutage(unplannedWorks.head.id)).thenReturn(Future(Left(OutageArchiveError)))
+      val result = controller.archiveOutage(unplannedWorks.head.id)(fakeRequest)
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }

@@ -39,21 +39,21 @@ class OutagesRepositoryISpec extends BaseISpec {
 
   private val outagesRepository: OutagesRepository = app.injector.instanceOf[OutagesRepository]
 
-  private val fakeUnplannedOutage: OutageData = fakeOutageData(outageType = Unplanned)
-  private val fakePlannedOutage: OutageData =
-    fakeOutageData(outageType = Planned, endDateTime = Some(now.truncatedTo(ChronoUnit.SECONDS).plus(1, ChronoUnit.DAYS)))
+  private val unplannedOutage: OutageData = fakeOutageData(outageType = Unplanned)
+  private val plannedOutage: OutageData =
+    fakeOutageData(outageType = Planned, endDateTime = Some(futureTestDate))
 
   "submitOutage" should {
     "create an unplanned outage in the database with a valid request" in {
-      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      await(outagesRepository.submitOutage(unplannedOutage))
       val result = testController.list()(fakeRequest(testRoutes.TestController.list()))
-      contentAsJson(result).as[List[OutageData]] shouldBe List(fakeUnplannedOutage)
+      contentAsJson(result).as[List[OutageData]] shouldBe List(unplannedOutage)
     }
 
     "create a planned outage in the database with a valid request" in {
-      await(outagesRepository.submitOutage(fakePlannedOutage))
+      await(outagesRepository.submitOutage(plannedOutage))
       val result = testController.list()(fakeRequest(testRoutes.TestController.list()))
-      contentAsJson(result).as[List[OutageData]] shouldBe List(fakePlannedOutage)
+      contentAsJson(result).as[List[OutageData]] shouldBe List(plannedOutage)
     }
   }
 
@@ -64,27 +64,27 @@ class OutagesRepositoryISpec extends BaseISpec {
     }
 
     "return an empty list if there are only unplanned outage entries in the database" in {
-      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      await(outagesRepository.submitOutage(unplannedOutage))
       val result = await(outagesRepository.findAllPlanned())
       result.size shouldBe 0
     }
 
     "return all the outage entries whose end date is in the future" in {
-      await(outagesRepository.submitOutage(fakePlannedOutage))
+      await(outagesRepository.submitOutage(plannedOutage))
       await(
         outagesRepository.submitOutage(
-          fakePlannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))).copy(id = UUID.randomUUID())
+          plannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))).copy(id = UUID.randomUUID())
         )
       )
 
       val result = await(outagesRepository.findAllPlanned())
-      result.head shouldBe fakePlannedOutage
+      result.head shouldBe plannedOutage
       result.size shouldBe 1
     }
 
     "return no outage entries if end dates are in the past" in {
       await(
-        outagesRepository.submitOutage(fakePlannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))))
+        outagesRepository.submitOutage(plannedOutage.copy(endDateTime = Some(Instant.now().minus(1, ChronoUnit.DAYS))))
       )
 
       val result = await(outagesRepository.findAllPlanned())
@@ -92,14 +92,14 @@ class OutagesRepositoryISpec extends BaseISpec {
     }
 
     "return all the outage entries sorted by their start date" in {
-      fakePlannedWorks.map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
+      plannedWorks.map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
       val result = await(outagesRepository.findAllPlanned())
       result.map(_.startDateTime) shouldBe sorted
     }
 
     "return all the customsServiceStatus entries in the database" in {
-      await(outagesRepository.submitOutage(fakePlannedOutage))
-      await(outagesRepository.submitOutage(fakeUnplannedOutage))
+      await(outagesRepository.submitOutage(plannedOutage))
+      await(outagesRepository.submitOutage(unplannedOutage))
       val result = await(outagesRepository.findAll())
       result.size shouldBe 2
     }
@@ -107,30 +107,30 @@ class OutagesRepositoryISpec extends BaseISpec {
 
   "findAll" should {
     "return all the outage entries" in {
-      List(fakePlannedOutage, fakeUnplannedOutage).map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
+      List(plannedOutage, unplannedOutage).map(plannedWork => await(outagesRepository.submitOutage(plannedWork)))
       val result = await(outagesRepository.findAll())
-      result should contain allElementsOf List(fakePlannedOutage, fakeUnplannedOutage)
+      result should contain allElementsOf List(plannedOutage, unplannedOutage)
     }
   }
 
   "find" should {
     "return a matching planned outage" in {
-      await(outagesRepository.submitOutage(fakePlannedOutage))
-      val result = await(outagesRepository.find(fakePlannedOutage.id))
-      result shouldBe Some(fakePlannedOutage)
+      await(outagesRepository.submitOutage(plannedOutage))
+      val result = await(outagesRepository.find(plannedOutage.id))
+      result shouldBe Some(plannedOutage)
     }
 
     "return a matching unplanned outage" in {
-      await(outagesRepository.submitOutage(fakeUnplannedOutage))
-      val result = await(outagesRepository.find(fakeUnplannedOutage.id))
-      result shouldBe Some(fakeUnplannedOutage)
+      await(outagesRepository.submitOutage(unplannedOutage))
+      val result = await(outagesRepository.find(unplannedOutage.id))
+      result shouldBe Some(unplannedOutage)
     }
   }
 
   "delete" should {
     "successfully delete an outage if it exists" in {
-      await(outagesRepository.submitOutage(fakeUnplannedOutage))
-      await(outagesRepository.delete(fakeUnplannedOutage.id))
+      await(outagesRepository.submitOutage(unplannedOutage))
+      await(outagesRepository.delete(unplannedOutage.id))
       val result = callRoute(fakeRequest(testRoutes.TestController.list()))
       contentAsJson(result).as[List[OutageData]] shouldBe List.empty
     }

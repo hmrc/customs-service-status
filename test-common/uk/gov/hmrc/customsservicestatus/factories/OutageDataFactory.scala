@@ -18,7 +18,7 @@ package uk.gov.hmrc.customsservicestatus.factories
 
 import uk.gov.hmrc.customsservicestatus.models.DetailType.{CommsText, InternalReference}
 import uk.gov.hmrc.customsservicestatus.models.{OutageData, OutageType}
-import uk.gov.hmrc.customsservicestatus.TestData.fakeDate
+import uk.gov.hmrc.customsservicestatus.TestData.*
 
 import java.time.Instant
 import java.util.UUID
@@ -29,10 +29,10 @@ object OutageDataFactory {
     id:                UUID = UUID.randomUUID(),
     outageType:        OutageType,
     internalReference: InternalReference = InternalReference("Test reference"),
-    startDateTime:     Instant = fakeDate,
+    startDateTime:     Instant = pastTestDate,
     endDateTime:       Option[Instant] = None,
     commsText:         CommsText = CommsText("Test details"),
-    publishedDateTime: Instant = fakeDate,
+    publishedDateTime: Instant = pastTestDate,
     clsNotes:          Option[String] = None
   ): OutageData =
     OutageData(
