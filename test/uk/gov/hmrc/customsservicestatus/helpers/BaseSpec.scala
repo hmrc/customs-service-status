@@ -40,8 +40,7 @@ trait BaseSpec
     with OptionValues
     with Configs
     with AllMocks
-    with Status
-    with FakeObjects {
+    with Status {
 
   implicit lazy val ec:           ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
   implicit lazy val hc:           HeaderCarrier    = HeaderCarrier()
